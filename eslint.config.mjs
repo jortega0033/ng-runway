@@ -51,6 +51,7 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
       '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/no-extraneous-class': ['error', { allowWithDecorator: true }],
       eqeqeq: ['error', 'always'],
       'no-console': ['error', { allow: ['warn', 'error'] }],
     },
@@ -62,6 +63,10 @@ export default tseslint.config(
       '@angular-eslint/template/prefer-control-flow': 'error',
       '@angular-eslint/template/no-negated-async': 'error',
     },
+  },
+  {
+    files: ['**/*.spec.ts/*.html'],
+    rules: { '@angular-eslint/template/elements-content': 'off' },
   },
   {
     files: ['**/*.spec.ts'],
