@@ -20,6 +20,8 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
     command: `node scripts/serve-dist.mjs ${port}`,
+    // Playwright runs this from the config folder by default; the script needs the repo root.
+    cwd: '..',
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env['CI'],
   },
