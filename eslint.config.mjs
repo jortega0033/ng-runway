@@ -42,7 +42,7 @@ export default tseslint.config(
       ],
       '@angular-eslint/component-selector': [
         'error',
-        { type: 'element', prefix: ['app', 'ui'], style: 'kebab-case' },
+        { type: ['element', 'attribute'], prefix: ['app', 'ui'], style: 'kebab-case' },
       ],
       '@angular-eslint/prefer-on-push-component-change-detection': 'error',
       '@angular-eslint/prefer-inject': 'error',

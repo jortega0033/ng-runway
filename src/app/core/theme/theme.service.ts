@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, effect, inject, signal } from '@angular/core';
 
 export type ThemePreference = 'light' | 'dark' | 'system';
 export type ResolvedTheme = 'light' | 'dark';
@@ -30,7 +30,9 @@ export class ThemeService {
 
   constructor() {
     // "system" follows prefers-color-scheme live.
-    this.media?.addEventListener('change', (event) => this.systemDark.set(event.matches));
+    const onChange = (event: MediaQueryListEvent) => this.systemDark.set(event.matches);
+    this.media?.addEventListener('change', onChange);
+    inject(DestroyRef).onDestroy(() => this.media?.removeEventListener('change', onChange));
 
     effect(() => {
       const theme = this.resolved();
