@@ -532,8 +532,15 @@ export class ScheduleGridComponent {
   protected readonly templates = this.store.templates;
   protected readonly isDay = computed(() => this.store.view() === 'day');
 
-  private readonly lang = toSignal(this.transloco.langChanges$, {
+  private readonly activeLang = toSignal(this.transloco.langChanges$, {
     initialValue: this.transloco.getActiveLang(),
+  });
+  // A new object arrives whenever the 'schedule' texts load, so reading it makes labels built in
+  // code refresh once the texts exist instead of showing a raw key.
+  private readonly scopeLoaded = toSignal(this.transloco.selectTranslation('schedule'));
+  private readonly lang = computed(() => {
+    this.scopeLoaded();
+    return this.activeLang();
   });
 
   protected readonly dayHeaders = computed(() => {

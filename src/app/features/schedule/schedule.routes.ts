@@ -1,5 +1,7 @@
+import { inject } from '@angular/core';
 import type { Routes } from '@angular/router';
-import { provideTranslocoScope } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoService } from '@jsverse/transloco';
+import { firstValueFrom } from 'rxjs';
 import { SchedulePage } from './pages/schedule.page';
 import { ScheduleStore } from './schedule.store';
 
@@ -11,6 +13,11 @@ export const SCHEDULE_ROUTES: Routes = [
   {
     path: '',
     providers: [provideTranslocoScope('schedule'), ScheduleStore],
+    // Wait for the schedule texts before the page opens: it builds some labels in code, and those
+    // would show raw keys if they were read before the texts arrive.
+    resolve: {
+      texts: () => firstValueFrom(inject(TranslocoService).selectTranslation('schedule')),
+    },
     component: SchedulePage,
   },
 ];
