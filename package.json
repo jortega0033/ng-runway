@@ -15,7 +15,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
     "hooks:install": "husky",
-    "cli:test": "node --test \"cli/**/*.test.mjs\"",
+    "cli:test": "node --test \"cli/**/*.test.mjs\" \"scripts/**/*.test.mjs\"",
     "e2e": "playwright test -c e2e/playwright.config.ts",
     "serve:dist": "node scripts/serve-dist.mjs",
     "docs:components": "node scripts/build-components-doc.mjs",
