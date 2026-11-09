@@ -4,6 +4,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "strict": true,
+    "resolveJsonModule": true,
     "paths": {
       "@core/*": ["./src/app/core/*"],
       "@ui/*": ["./src/app/ui/*"],

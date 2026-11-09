@@ -62,6 +62,8 @@ export default tseslint.config(
     rules: {
       '@angular-eslint/template/prefer-control-flow': 'error',
       '@angular-eslint/template/no-negated-async': 'error',
+      // <button ui-icon-button label="..."> gets its text from the label input.
+      '@angular-eslint/template/elements-content': ['error', { allowList: ['label'] }],
     },
   },
   {
@@ -76,13 +78,7 @@ export default tseslint.config(
     },
   },
   {
-    files: [
-      'scripts/**/*.{mjs,js}',
-      'cli/**/*.{mjs,js}',
-      '*.mjs',
-      'e2e/**/*.ts',
-      'playwright.config.ts',
-    ],
+    files: ['scripts/**/*.{mjs,js}', 'cli/**/*.{mjs,js}', '*.mjs'],
     languageOptions: { globals: nodeGlobals, ecmaVersion: 2023, sourceType: 'module' },
     rules: {
       'no-console': 'off',

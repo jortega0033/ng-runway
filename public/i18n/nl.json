@@ -1,0 +1,96 @@
+{
+  "common": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "create": "Aanmaken",
+    "add": "Toevoegen",
+    "search": "Zoeken",
+    "loading": "Laden",
+    "retry": "Opnieuw proberen",
+    "back": "Terug",
+    "close": "Sluiten",
+    "yes": "Ja",
+    "no": "Nee",
+    "actions": "Acties",
+    "status": "Status",
+    "all": "Alle",
+    "none": "Geen",
+    "from": "Van",
+    "to": "Tot",
+    "today": "Vandaag",
+    "previous": "Vorige",
+    "next": "Volgende",
+    "approve": "Goedkeuren",
+    "reject": "Afwijzen",
+    "comment": "Opmerking",
+    "noResults": "Niets komt overeen met je filters.",
+    "emptyTitle": "Nog niets hier",
+    "errorTitle": "Kon dit niet laden",
+    "errorText": "Er ging iets mis bij het laden. Probeer het opnieuw."
+  },
+  "errors": {
+    "requestFailed": "Verzoek mislukt",
+    "offline": "De server is niet bereikbaar.",
+    "unknown": "Er ging iets mis.",
+    "unexpected": "Onverwachte fout",
+    "unexpectedHint": "Herlaad de pagina als dit blijft gebeuren.",
+    "notFoundTitle": "Pagina niet gevonden",
+    "notFoundText": "De pagina die je zoekt bestaat niet of is verplaatst.",
+    "forbiddenTitle": "Geen toegang",
+    "forbiddenText": "Jouw rol kan deze pagina niet openen.",
+    "goHome": "Terug naar het dashboard"
+  },
+  "roles": {
+    "admin": "Beheerder",
+    "manager": "Manager",
+    "employee": "Medewerker"
+  },
+  "theme": {
+    "label": "Thema",
+    "light": "Licht",
+    "dark": "Donker",
+    "system": "Systeem"
+  },
+  "nav": {
+    "main": "Hoofdnavigatie",
+    "dashboard": "Dashboard",
+    "schedule": "Rooster",
+    "timesheets": "Urenregistratie",
+    "absences": "Verlof",
+    "employees": "Medewerkers",
+    "reports": "Rapporten",
+    "notifications": "Meldingen",
+    "settings": "Instellingen",
+    "designSystem": "Designsysteem"
+  },
+  "shell": {
+    "skipToContent": "Naar de inhoud",
+    "openMenu": "Menu openen",
+    "collapseMenu": "Menu inklappen",
+    "expandMenu": "Menu uitklappen",
+    "signOut": "Uitloggen",
+    "language": "Taal",
+    "offline": "Je bent offline. Wijzigingen worden pas opgeslagen als je weer verbonden bent.",
+    "notifications": "Meldingen",
+    "commandPalette": "Zoeken en opdrachten",
+    "devToolbar": "Dev-werkbalk",
+    "demoBadge": "Demodata"
+  },
+  "login": {
+    "title": "Inloggen bij ng-runway",
+    "subtitle": "Dit is een demo met nepdata. Kies een rol om verder te gaan.",
+    "adminHint": "Ziet alles, beheert teams en instellingen.",
+    "managerHint": "Plant het rooster en keurt aanvragen goed.",
+    "employeeHint": "Ziet eigen diensten, klokt in en vraagt verlof aan.",
+    "signInAs": "Doorgaan als {{role}}"
+  },
+  "dev": {
+    "slow": "Trage verbinding",
+    "errors": "Willekeurige fouten",
+    "empty": "Lege antwoorden",
+    "reset": "Demodata resetten",
+    "off": "Uit"
+  }
+}

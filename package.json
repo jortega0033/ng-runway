@@ -14,7 +14,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
-    "hooks:install": "husky"
+    "hooks:install": "husky",
+    "cli:test": "node --test \"cli/**/*.test.mjs\"",
+    "e2e": "playwright test -c e2e/playwright.config.ts",
+    "serve:dist": "node scripts/serve-dist.mjs"
   },
   "private": true,
   "packageManager": "npm@10.9.9",
@@ -71,5 +74,8 @@
     "*.{css,json,md,mjs,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "bin": {
+    "ng-runway": "cli/index.mjs"
   }
 }

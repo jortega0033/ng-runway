@@ -1,0 +1,33 @@
+# ng-runway
+
+> Angular 22 admin dashboard boilerplate for workforce management (UI only, mocked API). It ships a semantic design token set (CSS, JSON, Tailwind v4 theme, TypeScript), a hand-built UI component library on signals, Tailwind v4 and Signal Forms with no third-party UI kit, and a full example app. Pick the part you need through a zero-dependency CLI that copies source files; nothing is published to npm.
+
+## Install modes
+
+Pinned to the tag v1.0.0. Leaving out `#v1.0.0` follows the default branch.
+
+- Tokens only: `npx github:jortega0033/ng-runway#v1.0.0 tokens [dir] [--format css|json|tailwind|ts|all] [--force]`
+- UI library and tokens: `npx github:jortega0033/ng-runway#v1.0.0 ui [dir] [--force] [--docs]`
+- Full app: `npx github:jortega0033/ng-runway#v1.0.0 create <app-name> [--no-install] [--no-git]`
+
+Existing files are never overwritten without `--force`.
+
+## Design tokens (raw files, pinned to v1.0.0)
+
+- [tokens.css](https://raw.githubusercontent.com/jortega0033/ng-runway/v1.0.0/tokens/tokens.css): CSS custom properties, `.theme-light` and `.theme-dark`
+- [tokens.json](https://raw.githubusercontent.com/jortega0033/ng-runway/v1.0.0/tokens/tokens.json): the same tokens as W3C design tokens
+- [tailwind-theme.css](https://raw.githubusercontent.com/jortega0033/ng-runway/v1.0.0/tokens/tailwind-theme.css): Tailwind v4 `@theme` mapping (generated)
+- [tokens.ts](https://raw.githubusercontent.com/jortega0033/ng-runway/v1.0.0/tokens/tokens.ts): typed constants (generated)
+
+## Docs
+
+- [README](https://github.com/jortega0033/ng-runway/blob/v1.0.0/README.md): overview and quick start
+- [UI components](https://github.com/jortega0033/ng-runway/blob/v1.0.0/docs/components.md): index of all components with usage
+- [Adapting to an existing project](https://github.com/jortega0033/ng-runway/blob/v1.0.0/docs/adapting.md): tokens, UI library, Tailwind, Angular 17-19 notes
+- [Agent rules](https://github.com/jortega0033/ng-runway/blob/v1.0.0/AGENTS.md): run commands, structure, conventions
+
+## Rules for agents
+
+- Reuse components in `src/app/ui` and semantic tokens (`--colors-*`); do not invent new ones.
+- Never use raw hex values or `--palette-*` in components.
+- Never edit values in `tokens/tokens.css` or `tokens/tokens.json`.

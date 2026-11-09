@@ -1,0 +1,96 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading",
+    "retry": "Try again",
+    "back": "Back",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "actions": "Actions",
+    "status": "Status",
+    "all": "All",
+    "none": "None",
+    "from": "From",
+    "to": "To",
+    "today": "Today",
+    "previous": "Previous",
+    "next": "Next",
+    "approve": "Approve",
+    "reject": "Reject",
+    "comment": "Comment",
+    "noResults": "Nothing matches your filters.",
+    "emptyTitle": "Nothing here yet",
+    "errorTitle": "Could not load this",
+    "errorText": "Something went wrong while loading. Try again."
+  },
+  "errors": {
+    "requestFailed": "Request failed",
+    "offline": "The server cannot be reached.",
+    "unknown": "Something went wrong.",
+    "unexpected": "Unexpected error",
+    "unexpectedHint": "Reload the page if this keeps happening.",
+    "notFoundTitle": "Page not found",
+    "notFoundText": "The page you are looking for does not exist or was moved.",
+    "forbiddenTitle": "No access",
+    "forbiddenText": "Your role cannot open this page.",
+    "goHome": "Back to the dashboard"
+  },
+  "roles": {
+    "admin": "Admin",
+    "manager": "Manager",
+    "employee": "Employee"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "dashboard": "Dashboard",
+    "schedule": "Schedule",
+    "timesheets": "Timesheets",
+    "absences": "Absences",
+    "employees": "Employees",
+    "reports": "Reports",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "designSystem": "Design system"
+  },
+  "shell": {
+    "skipToContent": "Skip to content",
+    "openMenu": "Open menu",
+    "collapseMenu": "Collapse menu",
+    "expandMenu": "Expand menu",
+    "signOut": "Sign out",
+    "language": "Language",
+    "offline": "You are offline. Changes will not be saved until you reconnect.",
+    "notifications": "Notifications",
+    "commandPalette": "Search and commands",
+    "devToolbar": "Dev toolbar",
+    "demoBadge": "Demo data"
+  },
+  "login": {
+    "title": "Sign in to ng-runway",
+    "subtitle": "This is a demo with mocked data. Pick a role to continue.",
+    "adminHint": "Sees everything, manages teams and settings.",
+    "managerHint": "Plans the schedule and approves requests.",
+    "employeeHint": "Sees own shifts, clocks in and requests time off.",
+    "signInAs": "Continue as {{role}}"
+  },
+  "dev": {
+    "slow": "Slow network",
+    "errors": "Random errors",
+    "empty": "Empty responses",
+    "reset": "Reset demo data",
+    "off": "Off"
+  }
+}

@@ -51,4 +51,4 @@ skills-lock.json
 /playwright-report
 /test-results
 /blob-report
-.build-brief.md
+.build-brief*.md
