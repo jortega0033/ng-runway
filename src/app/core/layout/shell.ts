@@ -3,6 +3,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../auth/auth.service';
+import { CommandPaletteComponent } from '../command-palette/command-palette';
+import { CommandPaletteTriggerComponent } from '../command-palette/command-palette-trigger';
 import { DevToolbarComponent, devToolbarEnabled } from '../dev/dev-toolbar';
 import { LanguageService, type Language } from '../i18n/i18n';
 import { ThemeService, type ThemePreference } from '../theme/theme.service';
@@ -29,6 +31,8 @@ const THEME_ICON: Record<ThemePreference, IconName> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AvatarComponent,
+    CommandPaletteComponent,
+    CommandPaletteTriggerComponent,
     DevToolbarComponent,
     IconButtonComponent,
     IconComponent,
@@ -76,6 +80,7 @@ const THEME_ICON: Record<ThemePreference, IconName> = {
           >
             ng-runway
           </a>
+          <app-command-palette-trigger slot="center" />
           <div slot="end" class="flex items-center gap-2">
             <ui-segmented
               [label]="'shell.language' | transloco"
@@ -121,6 +126,7 @@ const THEME_ICON: Record<ThemePreference, IconName> = {
       </div>
     </div>
     <ui-toast-container />
+    <app-command-palette />
     @if (devTools) {
       <app-dev-toolbar />
     }

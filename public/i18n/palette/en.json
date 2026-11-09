@@ -1,0 +1,23 @@
+{
+  "goTo": "Go to {{page}}",
+  "inputLabel": "Search commands",
+  "placeholder": "Type a page or command",
+  "results": "Commands",
+  "noResults": "No commands match your search.",
+  "resultOne": "{{count}} command available",
+  "resultMany": "{{count}} commands available",
+  "languages": {
+    "en": "English",
+    "nl": "Nederlands"
+  },
+  "groups": {
+    "navigate": "Page",
+    "theme": "Theme",
+    "language": "Language",
+    "account": "Account"
+  },
+  "resetTitle": "Reset demo data?",
+  "resetMessage": "All changes you made in this demo are lost and you are signed out. This cannot be undone.",
+  "resetConfirm": "Reset and sign out",
+  "resetDone": "Demo data reset"
+}

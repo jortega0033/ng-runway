@@ -1,0 +1,153 @@
+{
+  "breadcrumb": "Breadcrumb",
+  "weekdays": {
+    "mon": "Monday",
+    "tue": "Tuesday",
+    "wed": "Wednesday",
+    "thu": "Thursday",
+    "fri": "Friday",
+    "sat": "Saturday",
+    "sun": "Sunday"
+  },
+  "contract": {
+    "permanent": "Permanent",
+    "fixed-term": "Fixed term",
+    "flex": "Flex",
+    "intern": "Internship"
+  },
+  "list": {
+    "title": "Employees",
+    "description": "Everyone on your teams, with contract hours and role.",
+    "new": "New employee",
+    "search": "Search",
+    "searchPlaceholder": "Name, email or job title",
+    "team": "Team",
+    "location": "Location",
+    "role": "Role",
+    "allTeams": "All teams",
+    "allLocations": "All locations",
+    "allRoles": "All roles",
+    "clear": "Clear filters",
+    "tableLabel": "Employees",
+    "emptyTitle": "No employees yet",
+    "emptyText": "Add the first employee to start planning shifts.",
+    "noMatchTitle": "No employees found",
+    "summary": "Employees found: {{ count }}",
+    "columns": {
+      "name": "Name",
+      "jobTitle": "Job title",
+      "team": "Team",
+      "location": "Location",
+      "role": "Role",
+      "hours": "Hours/week"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous page",
+      "next": "Next page",
+      "pageSize": "Rows per page",
+      "page": "Page {{ page }}"
+    }
+  },
+  "form": {
+    "newTitle": "New employee",
+    "editTitle": "Edit employee",
+    "created": "Employee added",
+    "updated": "Employee updated",
+    "fixErrors": "Check the form",
+    "fixErrorsText": "Some fields need your attention before you can save.",
+    "saveFailed": "Could not save the employee",
+    "sections": {
+      "person": "Personal details",
+      "job": "Job",
+      "contract": "Contract",
+      "availability": "Availability"
+    },
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "phone": "Phone",
+    "jobTitle": "Job title",
+    "team": "Team",
+    "teamPlaceholder": "Choose a team",
+    "role": "Role",
+    "adminOnlyHint": "Only admins can assign the admin role.",
+    "active": "Active employee",
+    "contractType": "Contract type",
+    "startDate": "Start date",
+    "hoursPerWeek": "Hours per week",
+    "hoursHint": "Between 0 and 60.",
+    "hourlyRate": "Hourly rate (EUR)",
+    "rateHint": "Cost per hour, for example 18.50.",
+    "availabilityHint": "Switch a day on to set the hours this person can work.",
+    "from": "From",
+    "to": "Until",
+    "errors": {
+      "required": "This field is required.",
+      "email": "Enter a valid email address.",
+      "number": "Enter a number, for example 32 or 37.5.",
+      "hoursRange": "Hours per week must be between 0 and 60.",
+      "rateRange": "The hourly rate is too high.",
+      "date": "Enter a valid date.",
+      "timeRequired": "Enter a start and end time.",
+      "timeOrder": "The end time must be after the start time."
+    },
+    "pickers": {
+      "openCalendar": "Open calendar",
+      "calendar": "Calendar",
+      "openTimes": "Show times",
+      "times": "Times"
+    }
+  },
+  "profile": {
+    "errorTitle": "Could not load this employee",
+    "backToList": "Back to employees",
+    "inactive": "Inactive",
+    "sections": "Employee sections",
+    "tabs": {
+      "details": "Details",
+      "contract": "Contract",
+      "schedule": "Schedule",
+      "absences": "Absences"
+    },
+    "location": "Location",
+    "availableDays": "Available {{ days }} days a week",
+    "notAvailable": "Not available",
+    "endDate": "End date",
+    "openEnded": "No end date"
+  },
+  "schedule": {
+    "emptyTitle": "No shifts this week",
+    "emptyText": "Nothing is planned for this person in the current week.",
+    "thisWeek": "This week",
+    "total": "{{ scheduled }} planned of {{ contract }} h contract",
+    "progressLabel": "Planned hours compared with contract hours",
+    "noShift": "No shift",
+    "draft": "Draft"
+  },
+  "absences": {
+    "balances": "Balances this year",
+    "noBalances": "No balances for this employee.",
+    "remaining": "{{ days }} of {{ total }} days left",
+    "usage": "{{ used }} approved, {{ pending }} pending",
+    "requests": "Requests",
+    "emptyTitle": "No absence requests",
+    "emptyText": "This employee has not asked for time off yet.",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "columns": {
+      "type": "Type",
+      "period": "Period",
+      "status": "Status",
+      "reason": "Reason"
+    }
+  },
+  "delete": {
+    "title": "Delete employee?",
+    "message": "{{ name }} will be removed. Their shifts become open shifts and their requests and time entries are deleted. This cannot be undone.",
+    "done": "Employee deleted"
+  }
+}

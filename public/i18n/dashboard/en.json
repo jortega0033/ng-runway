@@ -1,0 +1,43 @@
+{
+  "title": "My overview",
+  "greeting": "Welcome back, {{ name }}. Here is what is coming up.",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "nextShifts": {
+    "title": "Next shifts",
+    "seeAll": "Open schedule",
+    "emptyTitle": "No upcoming shifts",
+    "emptyText": "Nothing is planned for you in the next two months."
+  },
+  "hours": {
+    "title": "Hours this week",
+    "seeAll": "Timesheets",
+    "ofContract": "planned of {{ hours }} h contract",
+    "progressLabel": "Planned hours compared with contract hours",
+    "remaining": "{{ time }} left to plan this week.",
+    "over": "You are planned above your contract hours."
+  },
+  "pending": {
+    "title": "Pending requests",
+    "seeAll": "All absences",
+    "badge": "Pending",
+    "emptyTitle": "No pending requests",
+    "emptyText": "Your absence requests are all answered."
+  },
+  "team": {
+    "title": "Team on shift today",
+    "seeAll": "Open schedule",
+    "emptyTitle": "Nobody on shift",
+    "emptyText": "No published shifts for your team today."
+  },
+  "approvals": {
+    "title": "Approvals waiting",
+    "waiting": "waiting for your decision",
+    "absences": "Absence requests ({{ count }})",
+    "entries": "Submitted hours ({{ count }})",
+    "reviewAbsences": "Review absences",
+    "reviewEntries": "Review timesheets",
+    "emptyTitle": "All caught up",
+    "emptyText": "No requests or timesheets are waiting for you."
+  }
+}

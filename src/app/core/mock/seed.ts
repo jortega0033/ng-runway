@@ -254,6 +254,13 @@ function buildShifts(employees: Employee[], anchorWeek: string): Shift[] {
   return shifts;
 }
 
+/** Wall-clock `yyyy-MM-dd` + `HH:mm` in the viewer's time zone as a real ISO instant. */
+function localInstant(date: string, time: string): string {
+  const [y, m, d] = date.split('-').map(Number);
+  const [h, min] = time.split(':').map(Number);
+  return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1, h ?? 0, min ?? 0).toISOString();
+}
+
 function buildClockEntries(shifts: Shift[], anchorWeek: string, today: string): ClockEntry[] {
   const entries: ClockEntry[] = [];
   let n = 0;
@@ -269,11 +276,11 @@ function buildClockEntries(shifts: Shift[], anchorWeek: string, today: string): 
     const jitterOut = faker.number.int({ min: -10, max: 15 });
     const dateOf = (time: string, offset: number): string => {
       const minutes = toMinutes(time) + offset;
-      return `${s.date}T${fromMinutes(minutes)}:00.000Z`;
+      return localInstant(s.date, fromMinutes(minutes));
     };
     const clockIn = dateOf(s.start, jitterIn);
     const endDate = toMinutes(s.end) <= toMinutes(s.start) ? addDays(s.date, 1) : s.date;
-    const clockOut = `${endDate}T${fromMinutes(toMinutes(s.end) + jitterOut)}:00.000Z`;
+    const clockOut = localInstant(endDate, fromMinutes(toMinutes(s.end) + jitterOut));
     const breakStartMin = toMinutes(s.start) + Math.floor(spanMinutes(s.start, s.end) / 2);
     const week = startOfWeek(s.date);
     entries.push({
@@ -286,8 +293,8 @@ function buildClockEntries(shifts: Shift[], anchorWeek: string, today: string): 
         s.breakMinutes > 0
           ? [
               {
-                start: `${s.date}T${fromMinutes(breakStartMin)}:00.000Z`,
-                end: `${s.date}T${fromMinutes(breakStartMin + s.breakMinutes)}:00.000Z`,
+                start: localInstant(s.date, fromMinutes(breakStartMin)),
+                end: localInstant(s.date, fromMinutes(breakStartMin + s.breakMinutes)),
               },
             ]
           : [],

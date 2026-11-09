@@ -1,0 +1,15 @@
+{
+  "title": "Notifications",
+  "description": "Updates about your schedule, timesheets and absence requests.",
+  "markAllRead": "Mark all as read",
+  "markRead": "Mark as read",
+  "allReadToast": "All notifications marked as read",
+  "new": "New",
+  "filter": "Show notifications",
+  "filterAll": "All",
+  "filterUnread": "Unread",
+  "emptyTitle": "No notifications yet",
+  "emptyText": "Updates about shifts, timesheets and absences will show up here.",
+  "noUnreadTitle": "You are all caught up",
+  "noUnreadText": "There are no unread notifications."
+}

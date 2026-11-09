@@ -84,7 +84,7 @@ const SKILLS: ComboOption[] = [
               [options]="found()"
               externalFilter
               placeholder="Search colleagues"
-              (query)="search()"
+              (query)="search($event)"
             />
           </ui-field>
           <ui-field label="Small">

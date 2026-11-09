@@ -1,0 +1,121 @@
+{
+  "title": "Afwezigheid",
+  "description": "Vraag verlof aan, volg je saldo en zie wie er afwezig is.",
+  "sections": "Onderdelen van afwezigheid",
+  "tabs": {
+    "mine": "Mijn afwezigheid",
+    "requests": "Aanvragen",
+    "calendar": "Teamkalender"
+  },
+  "status": {
+    "pending": "In behandeling",
+    "approved": "Goedgekeurd",
+    "rejected": "Afgewezen"
+  },
+  "types": {
+    "vacation": "Vakantie",
+    "sick": "Ziekteverlof",
+    "unavailable": "Niet beschikbaar",
+    "holiday": "Feestdag",
+    "special-leave": "Bijzonder verlof",
+    "maternity-leave": "Zwangerschapsverlof",
+    "short-term-care-leave": "Kortdurend zorgverlof",
+    "long-term-care-leave": "Langdurend zorgverlof",
+    "parental-leave": "Ouderschapsverlof",
+    "unpaid-leave": "Onbetaald verlof"
+  },
+  "typeShort": {
+    "vacation": "VAK",
+    "sick": "ZIEK",
+    "unavailable": "NB",
+    "holiday": "FEEST",
+    "special-leave": "BIJZ",
+    "maternity-leave": "ZWG",
+    "short-term-care-leave": "KZV",
+    "long-term-care-leave": "LZV",
+    "parental-leave": "OUD",
+    "unpaid-leave": "ONB"
+  },
+  "columns": {
+    "employee": "Medewerker",
+    "type": "Soort",
+    "dates": "Data",
+    "days": "Dagen",
+    "status": "Status",
+    "note": "Opmerking",
+    "reason": "Reden"
+  },
+  "my": {
+    "balances": "Saldo dit jaar",
+    "remainingDays": "{{ count }} dagen over",
+    "breakdown": "{{ used }} opgenomen, {{ pending }} in behandeling, van {{ total }} dagen",
+    "noBalancesTitle": "Nog geen saldo",
+    "noBalancesText": "Je verlofrechten verschijnen hier.",
+    "requests": "Mijn aanvragen",
+    "tableLabel": "Mijn verlofaanvragen",
+    "emptyTitle": "Nog geen aanvragen",
+    "emptyText": "Gebruik \"Verlof aanvragen\" om vakantie of ander verlof aan te vragen.",
+    "managerNote": "Manager: {{ comment }}"
+  },
+  "request": {
+    "open": "Verlof aanvragen",
+    "title": "Verlof aanvragen",
+    "employee": "Medewerker",
+    "type": "Soort",
+    "startDate": "Startdatum",
+    "endDate": "Einddatum",
+    "reason": "Reden",
+    "reasonHint": "Optioneel. Je manager ziet dit.",
+    "chooseDate": "Kies een datum",
+    "calendar": "Kalender",
+    "days": "Werkdagen: {{ count }}",
+    "remaining": "Saldo na deze aanvraag: {{ after }} van {{ total }} dagen (nu {{ before }})",
+    "noBalance": "Voor dit soort verlof is er geen dagensaldo.",
+    "exceedsTitle": "Meer dan je saldo",
+    "exceedsText": "Deze aanvraag is {{ count }} dagen meer dan je nog hebt. Je kunt hem toch versturen, je manager beslist.",
+    "submit": "Aanvraag versturen",
+    "sentTitle": "Aanvraag verstuurd",
+    "sentText": "Je aanvraag voor {{ count }} werkdagen wacht op goedkeuring.",
+    "errors": {
+      "type": "Kies een soort verlof.",
+      "startDate": "Kies een startdatum.",
+      "endDate": "Kies een einddatum.",
+      "endBeforeStart": "De einddatum kan niet voor de startdatum liggen."
+    }
+  },
+  "requests": {
+    "tableLabel": "Openstaande verlofaanvragen",
+    "emptyTitle": "Geen aanvragen om te beoordelen",
+    "emptyText": "Nieuwe aanvragen van je team verschijnen hier.",
+    "approveLabel": "Aanvraag van {{ name }} voor {{ dates }} goedkeuren",
+    "rejectLabel": "Aanvraag van {{ name }} voor {{ dates }} afwijzen",
+    "approveTitle": "Aanvraag goedkeuren",
+    "approveMessage": "Keur {{ type }} goed voor {{ name }}, {{ dates }}.",
+    "rejectTitle": "Aanvraag afwijzen",
+    "rejectMessage": "Wijs {{ type }} af voor {{ name }}, {{ dates }}.",
+    "commentOptional": "Opmerking (optioneel)",
+    "rejectHint": "Leg uit waarom, dan kan de medewerker een andere datum kiezen.",
+    "approvedTitle": "Aanvraag goedgekeurd",
+    "rejectedTitle": "Aanvraag afgewezen",
+    "doneText": "{{ name }}, {{ type }}, {{ dates }}."
+  },
+  "calendar": {
+    "team": "Team",
+    "location": "Locatie",
+    "allTeams": "Alle teams",
+    "allLocations": "Alle locaties",
+    "previousMonth": "Vorige maand",
+    "nextMonth": "Volgende maand",
+    "thisMonth": "Deze maand",
+    "gridLabel": "Afwezigheid van het team in {{ month }}",
+    "more": "+{{ count }} meer",
+    "legend": "Legenda:",
+    "pendingLegend": "Gestippeld: in behandeling",
+    "detailsTitle": "Details van de dag",
+    "nobodyAway": "Niemand is afwezig op deze dag.",
+    "pickDay": "Kies een dag om te zien wie er afwezig is.",
+    "emptyMonth": "Niemand in deze selectie is deze maand afwezig.",
+    "cellNobody": "{{ date }}. Niemand afwezig.",
+    "cellAway": "{{ date }}. {{ count }} afwezig: {{ people }}."
+  }
+}

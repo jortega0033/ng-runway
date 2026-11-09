@@ -1,0 +1,153 @@
+{
+  "breadcrumb": "Kruimelpad",
+  "weekdays": {
+    "mon": "Maandag",
+    "tue": "Dinsdag",
+    "wed": "Woensdag",
+    "thu": "Donderdag",
+    "fri": "Vrijdag",
+    "sat": "Zaterdag",
+    "sun": "Zondag"
+  },
+  "contract": {
+    "permanent": "Vast",
+    "fixed-term": "Bepaalde tijd",
+    "flex": "Flex",
+    "intern": "Stage"
+  },
+  "list": {
+    "title": "Medewerkers",
+    "description": "Iedereen in je teams, met contracturen en rol.",
+    "new": "Nieuwe medewerker",
+    "search": "Zoeken",
+    "searchPlaceholder": "Naam, e-mail of functie",
+    "team": "Team",
+    "location": "Locatie",
+    "role": "Rol",
+    "allTeams": "Alle teams",
+    "allLocations": "Alle locaties",
+    "allRoles": "Alle rollen",
+    "clear": "Filters wissen",
+    "tableLabel": "Medewerkers",
+    "emptyTitle": "Nog geen medewerkers",
+    "emptyText": "Voeg de eerste medewerker toe om diensten te kunnen plannen.",
+    "noMatchTitle": "Geen medewerkers gevonden",
+    "summary": "Gevonden medewerkers: {{ count }}",
+    "columns": {
+      "name": "Naam",
+      "jobTitle": "Functie",
+      "team": "Team",
+      "location": "Locatie",
+      "role": "Rol",
+      "hours": "Uren/week"
+    },
+    "pagination": {
+      "label": "Paginering",
+      "previous": "Vorige pagina",
+      "next": "Volgende pagina",
+      "pageSize": "Rijen per pagina",
+      "page": "Pagina {{ page }}"
+    }
+  },
+  "form": {
+    "newTitle": "Nieuwe medewerker",
+    "editTitle": "Medewerker bewerken",
+    "created": "Medewerker toegevoegd",
+    "updated": "Medewerker bijgewerkt",
+    "fixErrors": "Controleer het formulier",
+    "fixErrorsText": "Een aantal velden heeft aandacht nodig voordat je kunt opslaan.",
+    "saveFailed": "De medewerker kon niet worden opgeslagen",
+    "sections": {
+      "person": "Persoonsgegevens",
+      "job": "Functie",
+      "contract": "Contract",
+      "availability": "Beschikbaarheid"
+    },
+    "firstName": "Voornaam",
+    "lastName": "Achternaam",
+    "email": "E-mail",
+    "phone": "Telefoon",
+    "jobTitle": "Functie",
+    "team": "Team",
+    "teamPlaceholder": "Kies een team",
+    "role": "Rol",
+    "adminOnlyHint": "Alleen beheerders kunnen de rol beheerder toekennen.",
+    "active": "Actieve medewerker",
+    "contractType": "Soort contract",
+    "startDate": "Startdatum",
+    "hoursPerWeek": "Uren per week",
+    "hoursHint": "Tussen 0 en 60.",
+    "hourlyRate": "Uurtarief (EUR)",
+    "rateHint": "Kosten per uur, bijvoorbeeld 18,50.",
+    "availabilityHint": "Zet een dag aan om de uren in te stellen waarop deze persoon kan werken.",
+    "from": "Van",
+    "to": "Tot",
+    "errors": {
+      "required": "Dit veld is verplicht.",
+      "email": "Vul een geldig e-mailadres in.",
+      "number": "Vul een getal in, bijvoorbeeld 32 of 37,5.",
+      "hoursRange": "Uren per week moet tussen 0 en 60 liggen.",
+      "rateRange": "Het uurtarief is te hoog.",
+      "date": "Vul een geldige datum in.",
+      "timeRequired": "Vul een begin- en eindtijd in.",
+      "timeOrder": "De eindtijd moet na de begintijd liggen."
+    },
+    "pickers": {
+      "openCalendar": "Kalender openen",
+      "calendar": "Kalender",
+      "openTimes": "Tijden tonen",
+      "times": "Tijden"
+    }
+  },
+  "profile": {
+    "errorTitle": "Deze medewerker kon niet worden geladen",
+    "backToList": "Terug naar medewerkers",
+    "inactive": "Inactief",
+    "sections": "Onderdelen van de medewerker",
+    "tabs": {
+      "details": "Gegevens",
+      "contract": "Contract",
+      "schedule": "Rooster",
+      "absences": "Afwezigheid"
+    },
+    "location": "Locatie",
+    "availableDays": "{{ days }} dagen per week beschikbaar",
+    "notAvailable": "Niet beschikbaar",
+    "endDate": "Einddatum",
+    "openEnded": "Geen einddatum"
+  },
+  "schedule": {
+    "emptyTitle": "Geen diensten deze week",
+    "emptyText": "Er is deze week niets ingepland voor deze persoon.",
+    "thisWeek": "Deze week",
+    "total": "{{ scheduled }} gepland van {{ contract }} uur contract",
+    "progressLabel": "Geplande uren ten opzichte van contracturen",
+    "noShift": "Geen dienst",
+    "draft": "Concept"
+  },
+  "absences": {
+    "balances": "Saldo dit jaar",
+    "noBalances": "Geen saldo voor deze medewerker.",
+    "remaining": "nog {{ days }} van {{ total }} dagen",
+    "usage": "{{ used }} goedgekeurd, {{ pending }} in behandeling",
+    "requests": "Aanvragen",
+    "emptyTitle": "Geen verlofaanvragen",
+    "emptyText": "Deze medewerker heeft nog geen verlof aangevraagd.",
+    "status": {
+      "pending": "In behandeling",
+      "approved": "Goedgekeurd",
+      "rejected": "Afgewezen"
+    },
+    "columns": {
+      "type": "Soort",
+      "period": "Periode",
+      "status": "Status",
+      "reason": "Reden"
+    }
+  },
+  "delete": {
+    "title": "Medewerker verwijderen?",
+    "message": "{{ name }} wordt verwijderd. De diensten worden open diensten en de aanvragen en urenregistraties worden gewist. Dit kan niet ongedaan worden gemaakt.",
+    "done": "Medewerker verwijderd"
+  }
+}

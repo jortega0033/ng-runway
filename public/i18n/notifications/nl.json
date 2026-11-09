@@ -1,0 +1,15 @@
+{
+  "title": "Meldingen",
+  "description": "Updates over je rooster, urenstaten en verlofaanvragen.",
+  "markAllRead": "Alles als gelezen markeren",
+  "markRead": "Markeer als gelezen",
+  "allReadToast": "Alle meldingen zijn als gelezen gemarkeerd",
+  "new": "Nieuw",
+  "filter": "Meldingen tonen",
+  "filterAll": "Alle",
+  "filterUnread": "Ongelezen",
+  "emptyTitle": "Nog geen meldingen",
+  "emptyText": "Updates over diensten, urenstaten en verlof verschijnen hier.",
+  "noUnreadTitle": "Je bent helemaal bij",
+  "noUnreadText": "Er zijn geen ongelezen meldingen."
+}

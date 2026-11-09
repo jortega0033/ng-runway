@@ -1,0 +1,26 @@
+{
+  "title": "Settings",
+  "description": "Appearance, language and reference data.",
+  "appearance": "Appearance",
+  "language": "Language",
+  "languages": {
+    "en": "English",
+    "nl": "Nederlands"
+  },
+  "readOnly": "Read-only in the demo; add endpoints in core/mock/handlers.ts to make these editable.",
+  "teams": "Teams",
+  "locations": "Locations",
+  "absenceTypes": "Absence types",
+  "name": "Name",
+  "location": "Location",
+  "city": "City",
+  "teamCount": "Teams",
+  "paid": "Paid",
+  "yearlyDays": "Days per year",
+  "demoData": "Demo data",
+  "demoDataText": "Put every employee, shift, timesheet and absence back to the original demo set. You will be signed out.",
+  "resetTitle": "Reset demo data?",
+  "resetMessage": "All changes you made in this demo are lost and you are signed out. This cannot be undone.",
+  "resetConfirm": "Reset and sign out",
+  "resetDone": "Demo data reset"
+}

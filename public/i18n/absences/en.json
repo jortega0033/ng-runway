@@ -1,0 +1,121 @@
+{
+  "title": "Absences",
+  "description": "Request time off, follow your balance and see who is away.",
+  "sections": "Absence sections",
+  "tabs": {
+    "mine": "My absences",
+    "requests": "Requests",
+    "calendar": "Team calendar"
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "types": {
+    "vacation": "Vacation",
+    "sick": "Sick leave",
+    "unavailable": "Unavailable",
+    "holiday": "Public holiday",
+    "special-leave": "Special leave",
+    "maternity-leave": "Maternity leave",
+    "short-term-care-leave": "Short-term care leave",
+    "long-term-care-leave": "Long-term care leave",
+    "parental-leave": "Parental leave",
+    "unpaid-leave": "Unpaid leave"
+  },
+  "typeShort": {
+    "vacation": "VAC",
+    "sick": "SICK",
+    "unavailable": "UNAV",
+    "holiday": "HOL",
+    "special-leave": "SPL",
+    "maternity-leave": "MAT",
+    "short-term-care-leave": "STC",
+    "long-term-care-leave": "LTC",
+    "parental-leave": "PAR",
+    "unpaid-leave": "UNP"
+  },
+  "columns": {
+    "employee": "Employee",
+    "type": "Type",
+    "dates": "Dates",
+    "days": "Days",
+    "status": "Status",
+    "note": "Note",
+    "reason": "Reason"
+  },
+  "my": {
+    "balances": "Balances this year",
+    "remainingDays": "{{ count }} days left",
+    "breakdown": "{{ used }} used, {{ pending }} pending, of {{ total }} days",
+    "noBalancesTitle": "No balances yet",
+    "noBalancesText": "Your leave entitlements will show up here.",
+    "requests": "My requests",
+    "tableLabel": "My absence requests",
+    "emptyTitle": "No requests yet",
+    "emptyText": "Use \"Request time off\" to ask for vacation or other leave.",
+    "managerNote": "Manager: {{ comment }}"
+  },
+  "request": {
+    "open": "Request time off",
+    "title": "Request time off",
+    "employee": "Employee",
+    "type": "Type",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "reason": "Reason",
+    "reasonHint": "Optional. Your manager sees this.",
+    "chooseDate": "Choose date",
+    "calendar": "Calendar",
+    "days": "Working days: {{ count }}",
+    "remaining": "Balance after this request: {{ after }} of {{ total }} days (now {{ before }})",
+    "noBalance": "This type has no day balance.",
+    "exceedsTitle": "More than your balance",
+    "exceedsText": "This request is {{ count }} days over what you have left. You can still send it, your manager decides.",
+    "submit": "Send request",
+    "sentTitle": "Request sent",
+    "sentText": "Your request for {{ count }} working days is waiting for approval.",
+    "errors": {
+      "type": "Choose a type.",
+      "startDate": "Choose a start date.",
+      "endDate": "Choose an end date.",
+      "endBeforeStart": "The end date cannot be before the start date."
+    }
+  },
+  "requests": {
+    "tableLabel": "Pending absence requests",
+    "emptyTitle": "No requests to review",
+    "emptyText": "New requests from your team show up here.",
+    "approveLabel": "Approve request of {{ name }} for {{ dates }}",
+    "rejectLabel": "Reject request of {{ name }} for {{ dates }}",
+    "approveTitle": "Approve request",
+    "approveMessage": "Approve {{ type }} for {{ name }}, {{ dates }}.",
+    "rejectTitle": "Reject request",
+    "rejectMessage": "Reject {{ type }} for {{ name }}, {{ dates }}.",
+    "commentOptional": "Comment (optional)",
+    "rejectHint": "Tell the employee why, so they can plan another date.",
+    "approvedTitle": "Request approved",
+    "rejectedTitle": "Request rejected",
+    "doneText": "{{ name }}, {{ type }}, {{ dates }}."
+  },
+  "calendar": {
+    "team": "Team",
+    "location": "Location",
+    "allTeams": "All teams",
+    "allLocations": "All locations",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "thisMonth": "This month",
+    "gridLabel": "Team absences in {{ month }}",
+    "more": "+{{ count }} more",
+    "legend": "Legend:",
+    "pendingLegend": "Dashed: pending",
+    "detailsTitle": "Day details",
+    "nobodyAway": "Nobody is away on this day.",
+    "pickDay": "Select a day to see who is away.",
+    "emptyMonth": "Nobody in this selection is away this month.",
+    "cellNobody": "{{ date }}. Nobody away.",
+    "cellAway": "{{ date }}. {{ count }} away: {{ people }}."
+  }
+}

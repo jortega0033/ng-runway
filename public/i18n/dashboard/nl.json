@@ -1,0 +1,43 @@
+{
+  "title": "Mijn overzicht",
+  "greeting": "Welkom terug, {{ name }}. Dit staat er voor je klaar.",
+  "today": "Vandaag",
+  "tomorrow": "Morgen",
+  "nextShifts": {
+    "title": "Volgende diensten",
+    "seeAll": "Rooster openen",
+    "emptyTitle": "Geen geplande diensten",
+    "emptyText": "Er staat de komende twee maanden niets voor je gepland."
+  },
+  "hours": {
+    "title": "Uren deze week",
+    "seeAll": "Urenstaten",
+    "ofContract": "gepland van {{ hours }} uur contract",
+    "progressLabel": "Geplande uren ten opzichte van contracturen",
+    "remaining": "Nog {{ time }} te plannen deze week.",
+    "over": "Je bent boven je contracturen ingepland."
+  },
+  "pending": {
+    "title": "Openstaande aanvragen",
+    "seeAll": "Alle afwezigheid",
+    "badge": "In behandeling",
+    "emptyTitle": "Geen openstaande aanvragen",
+    "emptyText": "Al je verlofaanvragen zijn beantwoord."
+  },
+  "team": {
+    "title": "Team aan het werk vandaag",
+    "seeAll": "Rooster openen",
+    "emptyTitle": "Niemand ingeroosterd",
+    "emptyText": "Er zijn vandaag geen gepubliceerde diensten voor je team."
+  },
+  "approvals": {
+    "title": "Goedkeuringen in afwachting",
+    "waiting": "wachten op jouw beslissing",
+    "absences": "Verlofaanvragen ({{ count }})",
+    "entries": "Ingediende uren ({{ count }})",
+    "reviewAbsences": "Afwezigheid beoordelen",
+    "reviewEntries": "Urenstaten beoordelen",
+    "emptyTitle": "Alles afgehandeld",
+    "emptyText": "Er wachten geen aanvragen of urenstaten op je."
+  }
+}

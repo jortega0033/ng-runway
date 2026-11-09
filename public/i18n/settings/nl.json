@@ -1,0 +1,26 @@
+{
+  "title": "Instellingen",
+  "description": "Weergave, taal en referentiegegevens.",
+  "appearance": "Weergave",
+  "language": "Taal",
+  "languages": {
+    "en": "English",
+    "nl": "Nederlands"
+  },
+  "readOnly": "Alleen lezen in de demo; voeg endpoints toe in core/mock/handlers.ts om dit bewerkbaar te maken.",
+  "teams": "Teams",
+  "locations": "Locaties",
+  "absenceTypes": "Verlofsoorten",
+  "name": "Naam",
+  "location": "Locatie",
+  "city": "Plaats",
+  "teamCount": "Teams",
+  "paid": "Betaald",
+  "yearlyDays": "Dagen per jaar",
+  "demoData": "Demogegevens",
+  "demoDataText": "Zet alle medewerkers, diensten, urenstaten en verlofaanvragen terug naar de oorspronkelijke demoset. Je wordt uitgelogd.",
+  "resetTitle": "Demogegevens herstellen?",
+  "resetMessage": "Alle wijzigingen die je in deze demo hebt gemaakt gaan verloren en je wordt uitgelogd. Dit kan niet ongedaan worden gemaakt.",
+  "resetConfirm": "Herstel en log uit",
+  "resetDone": "Demogegevens hersteld"
+}
