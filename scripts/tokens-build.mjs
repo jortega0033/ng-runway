@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Regenerates tokens/tailwind-theme.css and tokens/tokens.ts from tokens/tokens.css + tokens/tokens.json.
 // Usage: node scripts/tokens-build.mjs [--check]
+// Parser limits: :root / :root.theme-* blocks of simple `--name: value;` declarations only (no nested at-rules, no `}` inside values).
 // Plain Node, no dependencies. Works on Windows, macOS and Linux.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -88,6 +89,17 @@ export function build(dir = tokensDir) {
   const light = cssSemanticColors(parsed, 'light');
   const dark = cssSemanticColors(parsed, 'dark');
   const names = Object.keys(light);
+
+  // Fail loudly on token families this script does not know, instead of dropping them silently.
+  const known =
+    /^--(font-|text-|spacing|breakpoint-|container-|max-width-|layout-spacing-|shape-border-radius-|border-radius-|radius-|shadow-|drop-shadow-|ease-|animate-|default-transition|aspect-|tracking-|leading-|background-color-|text-color-)/;
+  const unknown = Object.keys(parsed.root).filter((k) => !known.test(k));
+  if (unknown.length)
+    throw new Error(
+      `Unknown token families in tokens.css :root: ${unknown.join(', ')}. Teach scripts/tokens-build.mjs about them.`,
+    );
+  if (!names.length)
+    throw new Error('tokens.css produced no semantic colors; unexpected file shape.');
 
   // ---- tailwind-theme.css ------------------------------------------------
   const keep = (re) =>

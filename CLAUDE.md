@@ -1,59 +1,32 @@
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+# ng-runway
 
-## TypeScript Best Practices
+Angular 22 admin dashboard boilerplate (workforce management). UI only, mocked API. M0 bootstrap in progress; this file grows with each milestone.
 
-- Use strict type checking
-- Prefer type inference when the type is obvious
-- Avoid the `any` type; use `unknown` when type is uncertain
+## Run and test
 
-## Angular Best Practices
+- `npm ci --ignore-scripts`, then `npm start` (dev), `npm run build`.
+- `npm test -- --watch=false` (Vitest through the Angular builder), `npm run lint`, `npm run format:check`, `npm run typecheck`.
+- `npm run tokens:build` regenerates `tokens/tailwind-theme.css` and `tokens/tokens.ts`; `npm run tokens:check` must pass.
+- `npm run hooks:install` sets up Husky (lint-staged, commitlint). Conventional commits.
 
-- Always use standalone components over NgModules
-- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
-- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
-- Use signals for state management
-- Implement lazy loading for feature routes
-- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
-- Use `NgOptimizedImage` for all static images.
-  - `NgOptimizedImage` does not work for inline base64 images.
+## Structure
 
-## Accessibility Requirements
+- `tokens/`: `tokens.css` and `tokens.json` are the source of truth, never edit values. Other files there are generated.
+- `src/app/core/` (app-wide services), `src/app/ui/` (UI library), `src/app/features/` (feature folders). Aliases: `@core/*`, `@ui/*`, `@features/*`, `@tokens`.
+- `docs/adr/`: decisions (MSW mock API, state, no UI kit, token pipeline, install modes).
 
-- It MUST pass all AXE checks.
-- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+## Conventions
 
-## Components
+- Standalone, zoneless, signals, `inject()`, new control flow. Tailwind v4 with semantic tokens only.
+- State: signal services by default; NgRx SignalStore only for the schedule (ADR 0002).
+- No UI kit. Reuse components in `src/app/ui/` and semantic tokens (`--colors-*`); do not invent new ones.
 
-- Keep components small and focused on a single responsibility
-- Use `input()` and `output()` functions instead of decorators
-- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
-- Use `computed()` for derived state
-- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
-- Prefer inline templates for small components
-- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
-- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
-- Do NOT use `ngClass`, use `class` bindings instead
-- Do NOT use `ngStyle`, use `style` bindings instead
-- Do NOT import `CommonModule`, import only the directives and pipes the template uses, such as `AsyncPipe` or `DatePipe`
-- When using external templates/styles, use paths relative to the component TS file.
+## Forbidden
 
-## State Management
+- Raw hex values or `--palette-*` in components. Gradients, glass or blur cards, emoji icons, lorem text.
+- Font files in the repo. Editing `tokens/tokens.css` or `tokens/tokens.json` values.
+- `dependencies` entries (everything is a devDependency), `prepare` or `postinstall` scripts.
 
-- Use signals for local component state
-- Use `computed()` for derived state
-- Keep state transformations pure and predictable
-- Do NOT use `mutate` on signals, use `update` or `set` instead
+## Skill routing (angular-engineer plugin)
 
-## Templates
-
-- Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
-- Use the async pipe to handle observables
-- Do not assume globals like (`new Date()`) are available.
-
-## Services
-
-- Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
-- Prefer the `@Service` decorator over `@Injectable({providedIn: 'root'})` for new singleton services (Angular v22+)
-- Use the `inject()` function instead of constructor injection
+Vague or large ticket: `angular-refine`. Before merge or on review comments: `angular-review`. New to the repo: `angular-onboard`. Sizing a change or PR: `angular-small-pr`. Building or fixing a feature: `angular-engineer`.
