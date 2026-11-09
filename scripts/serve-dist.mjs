@@ -40,10 +40,15 @@ createServer((req, res) => {
     return;
   }
   // Strip the prefix, then keep the path inside the build folder (no "../" escapes).
-  const relative = normalize(decodeURIComponent(url.pathname.slice(prefix.length))).replace(
-    /^([/\\]*\.\.)+/,
-    '',
-  );
+  let decoded;
+  try {
+    decoded = decodeURIComponent(url.pathname.slice(prefix.length));
+  } catch {
+    res.writeHead(400);
+    res.end('Bad request');
+    return;
+  }
+  const relative = normalize(decoded).replace(/^([/\\]*\.\.)+/, '');
   let file = join(root, relative);
   const isFile = existsSync(file) && statSync(file).isFile();
   // Real files are served as they are; app routes (no file extension) get index.html.

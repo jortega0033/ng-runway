@@ -6,9 +6,19 @@ export interface CsvColumn<T> {
 /** Excel needs this marker at the start to read the file as UTF-8 (names with accents). */
 export const CSV_BOM = '﻿';
 
-/** Wraps a field in quotes when it holds a delimiter, a quote or a line break. Quotes are doubled. */
+const FORMULA_START = /^[=+\-@\t\r]/;
+// A signed number written as text ("-1.50", "+2") is data, not a formula.
+const PLAIN_NUMBER = /^[+-]?\d+(\.\d+)?$/;
+
+/**
+ * Wraps a field in quotes when it holds a delimiter, a quote or a line break. Quotes are doubled.
+ * Text that starts with = + - @ (or a tab or CR) gets a leading apostrophe, so a spreadsheet shows
+ * it as text instead of running it as a formula. Numbers are left alone (-1.5 stays a number).
+ */
 export function escapeCsvField(value: string | number | null | undefined): string {
-  const text = value === null || value === undefined ? '' : String(value);
+  let text = value === null || value === undefined ? '' : String(value);
+  if (typeof value === 'string' && FORMULA_START.test(text) && !PLAIN_NUMBER.test(text))
+    text = `'${text}`;
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 

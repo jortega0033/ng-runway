@@ -23,6 +23,13 @@ describe('escapeCsvField', () => {
     expect(escapeCsvField('The "night" team')).toBe('"The ""night"" team"');
   });
 
+  it('stops spreadsheet formulas in text but keeps negative numbers', () => {
+    expect(escapeCsvField('=SUM(A1:A9)')).toBe("'=SUM(A1:A9)");
+    expect(escapeCsvField('@cmd')).toBe("'@cmd");
+    expect(escapeCsvField('-1+2')).toBe("'-1+2");
+    expect(escapeCsvField(-1.5)).toBe('-1.5');
+  });
+
   it('writes null and undefined as an empty field', () => {
     expect(escapeCsvField(null)).toBe('');
     expect(escapeCsvField(undefined)).toBe('');
