@@ -34,7 +34,7 @@ test.describe('employee time clock', () => {
     await expect(clockIn).toBeEnabled();
 
     // The finished entry shows in the week table, waiting for approval.
-    await expect(page.getByText('Submitted', { exact: true })).toBeVisible();
+    await expect(page.getByText('Submitted', { exact: true }).first()).toBeVisible();
   });
 });
 

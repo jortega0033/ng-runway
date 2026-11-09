@@ -14,6 +14,7 @@ const nodeGlobals = {
 export default tseslint.config(
   {
     ignores: [
+      'public/mockServiceWorker.js',
       'dist/**',
       '.angular/**',
       '.agents/**',

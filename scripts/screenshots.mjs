@@ -1,3 +1,4 @@
+/* global localStorage */
 /**
  * Takes the README screenshots (light and dark) from the production build.
  *
