@@ -8,6 +8,7 @@ import { BasicsSectionComponent } from './sections/basics-section';
 import { DataSectionComponent } from './sections/data-section';
 import { FormsSectionComponent } from './sections/forms-section';
 import { OverlaysSectionComponent } from './sections/overlays-section';
+import { SelectionSectionComponent } from './sections/selection-section';
 import { PickersSectionComponent } from './sections/pickers-section';
 
 /** Groups the semantic color tokens by their first word, for the swatch grid. */
@@ -32,6 +33,7 @@ function group(names: readonly string[]): { title: string; names: string[] }[] {
     OverlaysSectionComponent,
     PageHeaderComponent,
     PickersSectionComponent,
+    SelectionSectionComponent,
     SegmentedComponent,
   ],
   template: `
@@ -106,6 +108,12 @@ function group(names: readonly string[]): { title: string; names: string[] }[] {
       <section aria-labelledby="ds-forms">
         <h2 id="ds-forms" class="mb-4 text-2xl font-semibold">Forms</h2>
         <app-ds-forms />
+      </section>
+      <section aria-labelledby="ds-selection">
+        <h2 id="ds-selection" class="mb-4 text-2xl font-semibold">
+          Combobox, multiselect and tabs
+        </h2>
+        <app-ds-selection />
       </section>
       <section aria-labelledby="ds-pickers">
         <h2 id="ds-pickers" class="mb-4 text-2xl font-semibold">Pickers and selects</h2>
