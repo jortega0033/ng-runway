@@ -178,7 +178,9 @@ describe('command palette', () => {
     const button: HTMLButtonElement = trigger.nativeElement.querySelector('button');
 
     expect(button.getAttribute('aria-label')).toBe('Search and commands');
-    expect(button.textContent).toContain('Ctrl K');
+    // The hint is drawn with CSS content, so the visible text stays inside the accessible name.
+    expect(button.querySelector('kbd')).not.toBeNull();
+    expect(button.getAttribute('aria-keyshortcuts')).toContain('Control+K');
     button.click();
     TestBed.tick();
     await vi.waitFor(() => expect(combobox()).not.toBeNull());

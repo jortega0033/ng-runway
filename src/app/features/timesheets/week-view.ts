@@ -174,7 +174,7 @@ import {
                     <th scope="row" class="px-4 py-3 font-medium whitespace-nowrap">
                       {{ dayLabel(day.date) }}
                       @if (day.date === today) {
-                        <span class="ml-1 text-sm font-normal text-foreground-brand">
+                        <span class="ml-1 text-sm font-normal text-foreground-brand-strong">
                           ({{ 'common.today' | transloco }})
                         </span>
                       }

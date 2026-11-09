@@ -22,12 +22,12 @@ import { CommandPaletteService } from './command-palette.service';
       <span class="flex-1 truncate text-left" aria-hidden="true">
         {{ 'common.search' | transloco }}
       </span>
+      <!-- The hint is drawn with CSS content, so it is not part of the button's visible text
+           (the accessible name must contain all visible text, WCAG 2.5.3). -->
       <kbd
-        class="rounded-sm border border-border px-1.5 text-sm text-foreground-subtle"
+        class="rounded-sm border border-border px-1.5 text-sm text-foreground-subtle after:content-['Ctrl_K']"
         aria-hidden="true"
-      >
-        Ctrl K
-      </kbd>
+      ></kbd>
     </button>
   `,
 })

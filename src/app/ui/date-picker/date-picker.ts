@@ -49,6 +49,7 @@ import { fromIso, toIso } from './date-utils';
       <input
         #control
         type="text"
+        role="combobox"
         autocomplete="off"
         aria-haspopup="dialog"
         [class]="classes()"
@@ -60,6 +61,7 @@ import { fromIso, toIso } from './date-utils';
         [required]="required() || (field?.required() ?? false)"
         [attr.name]="name() || null"
         [attr.aria-expanded]="popover.isOpen()"
+        [attr.aria-controls]="popover.isOpen() ? popover.panelId : null"
         [attr.aria-invalid]="isInvalid() ? 'true' : null"
         [attr.aria-describedby]="field?.describedBy() ?? null"
         (input)="text.set(control.value)"

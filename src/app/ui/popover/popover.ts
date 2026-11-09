@@ -88,7 +88,7 @@ export class PopoverTriggerDirective {
   readonly uiPopoverOpened = output();
   readonly uiPopoverClosed = output();
 
-  protected readonly panelId = `ui-popover-${nextId++}`;
+  readonly panelId = `ui-popover-${nextId++}`;
   private readonly open$ = signal(false);
   readonly isOpen = computed(() => this.open$());
 

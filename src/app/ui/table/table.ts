@@ -206,7 +206,8 @@ export function nextSort(current: TableSort | null, key: string): TableSort | nu
       } @else if (virtual()) {
         <cdk-virtual-scroll-viewport
           role="rowgroup"
-          class="[scrollbar-gutter:stable]"
+          tabindex="0"
+          class="[scrollbar-gutter:stable] outline-offset-[-2px] focus-visible:outline-2 focus-visible:outline-border-brand"
           [itemSize]="rowHeight()"
           [style.height]="height() ?? '24rem'"
         >

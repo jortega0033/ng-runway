@@ -239,10 +239,15 @@ export class EmployeeListPage {
   private readonly roleCell =
     viewChild.required<TemplateRef<TableCellContext<Employee>>>('roleCell');
 
-  private readonly teams = toSignal(this.lookups.teams(), { initialValue: [] as Team[] });
-  private readonly locations = toSignal(this.lookups.locations(), {
-    initialValue: [] as Location[],
+  // The filters only need the lookups to fill their options. If a request fails the list itself
+  // shows the error, so a failing lookup falls back to no options (an errored toSignal throws on read).
+  private readonly teams = toSignal(this.lookups.teams().pipe(catchError(() => of([] as Team[]))), {
+    initialValue: [] as Team[],
   });
+  private readonly locations = toSignal(
+    this.lookups.locations().pipe(catchError(() => of([] as Location[]))),
+    { initialValue: [] as Location[] },
+  );
 
   protected readonly teamOptions = computed<SelectOption[]>(() =>
     this.teams().map((team) => ({ value: team.id, label: team.name })),

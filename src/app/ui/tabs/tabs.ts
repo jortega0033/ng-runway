@@ -81,7 +81,7 @@ export class TabComponent {
             [class]="
               orientation() === 'horizontal'
                 ? 'h-10 aria-selected:shadow-tab-active'
-                : 'h-9 rounded-md aria-selected:bg-background-brand-subtle aria-selected:text-foreground-brand'
+                : 'h-9 rounded-md aria-selected:bg-background-brand-subtle aria-selected:text-foreground-brand-strong'
             "
           >
             {{ t.label() }}
