@@ -1,0 +1,16 @@
+@import '../tokens/tokens.css';
+@import 'tailwindcss';
+@import '../tokens/tailwind-theme.css';
+
+@layer base {
+  html {
+    background-color: var(--colors-background-surface-page);
+    color: var(--colors-foreground);
+    font-family: var(--font-family-sans);
+  }
+  *,
+  ::before,
+  ::after {
+    border-color: var(--colors-border);
+  }
+}
