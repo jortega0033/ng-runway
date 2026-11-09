@@ -19,6 +19,7 @@ import { shiftNetMinutes, workedMinutes, minutesToHours } from '../domain/hours'
 import { addDays, startOfWeek, todayIso } from '../domain/time';
 import type { MockDb } from './db';
 import type { DevControls } from './dev-controls';
+import { MOCK_FEATURES, type HandlerKit } from './features';
 import { matchesSearch, paginate, readListQuery, sortItems } from './query';
 
 export const TOKEN_PREFIX = 'mock-token-';
@@ -129,7 +130,7 @@ export function createHandlers({
       (m) => m.userRole === 'admin' || (m.userRole === 'manager' && m.teamId === employee.teamId),
     );
 
-  return [
+  const core: HttpHandler[] = [
     // ---- auth ----
     http.post(url('/auth/login'), async ({ request }) => {
       const failed = await chaos(request);
@@ -697,4 +698,8 @@ export function createHandlers({
       ),
     ),
   ];
+
+  // Features made with `npm run gen:feature` register their own routes in features.ts.
+  const kit: HandlerKit = { url, route, state, save };
+  return [...core, ...MOCK_FEATURES.flatMap((feature) => feature.handlers(kit))];
 }

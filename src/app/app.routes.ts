@@ -59,6 +59,7 @@ export const routes: Routes = [
         loadChildren: () =>
           import('@features/settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
       },
+      // gen:feature:routes
       {
         path: 'design-system',
         loadComponent: () =>

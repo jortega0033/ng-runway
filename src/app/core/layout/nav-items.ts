@@ -20,6 +20,7 @@ export const NAV: readonly RoleNavItem[] = [
   { key: 'nav.reports', label: '', icon: 'list', link: '/reports', roles: MANAGERS },
   { key: 'nav.notifications', label: '', icon: 'bell', link: '/notifications', roles: ALL },
   { key: 'nav.settings', label: '', icon: 'settings', link: '/settings', roles: ALL },
+  // gen:feature:nav
   { key: 'nav.designSystem', label: '', icon: 'grid', link: '/design-system', roles: ALL },
 ];
 

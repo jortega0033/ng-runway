@@ -15,6 +15,7 @@ import type {
   Team,
   UserRole,
 } from '../api/models';
+import { MOCK_FEATURES } from './features';
 import { DB_SCHEMA_VERSION, type Db } from './db';
 import { addDays, fromMinutes, spanMinutes, startOfWeek, toMinutes } from '../domain/time';
 
@@ -407,5 +408,6 @@ export function createSeed(today: string): Db {
     absenceTypes: structuredClone(ABSENCE_TYPES),
     absences: buildAbsences(employees, anchorWeek),
     notifications: buildNotifications(),
+    collections: Object.fromEntries(MOCK_FEATURES.map((f) => [f.collection, f.seed()])),
   };
 }

@@ -25,9 +25,11 @@ export interface Db {
   absenceTypes: AbsenceType[];
   absences: AbsenceRequest[];
   notifications: AppNotification[];
+  /** Data of generated features, keyed by collection name (see features.ts). */
+  collections: Record<string, unknown[]>;
 }
 
-export const DB_SCHEMA_VERSION = 1;
+export const DB_SCHEMA_VERSION = 2;
 export const DB_STORAGE_KEY = 'ng-runway.db';
 
 /** Minimal storage surface, so tests can pass a fake instead of `localStorage`. */
