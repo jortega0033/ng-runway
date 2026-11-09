@@ -8,7 +8,13 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "tokens:build": "node scripts/tokens-build.mjs",
-    "tokens:check": "node scripts/tokens-build.mjs --check"
+    "tokens:check": "node scripts/tokens-build.mjs --check",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
+    "hooks:install": "husky"
   },
   "private": true,
   "packageManager": "npm@10.9.9",
@@ -56,5 +62,14 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jortega0033/ng-runway.git"
+  },
+  "lint-staged": {
+    "*.{ts,html}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,json,md,mjs,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }

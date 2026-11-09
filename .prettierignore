@@ -1,0 +1,13 @@
+dist
+.angular
+.agents
+.claude
+coverage
+playwright-report
+test-results
+drills
+package-lock.json
+# Tokens are source of truth and byte-exact; generated files are written by the script.
+tokens
+src/mockServiceWorker.js
+public/mockServiceWorker.js

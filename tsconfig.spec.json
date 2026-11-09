@@ -3,14 +3,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": [
-      "vitest/globals",
-      "node"
-    ]
+    "types": ["vitest/globals", "node"]
   },
-  "include": [
-    "src/**/*.d.ts",
-    "scripts/*.d.mts",
-    "src/**/*.spec.ts"
-  ]
+  "include": ["src/**/*.d.ts", "scripts/*.d.mts", "src/**/*.spec.ts"]
 }
