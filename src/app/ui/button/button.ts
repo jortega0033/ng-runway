@@ -2,7 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   booleanAttribute,
+  ElementRef,
   computed,
+  inject,
   input,
 } from '@angular/core';
 import { SpinnerComponent } from '../spinner/spinner';
@@ -42,13 +44,14 @@ const SIZES: Record<ButtonSize, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class]': 'classes()',
-    '[attr.disabled]': 'blocked() ? "" : null',
+    '[attr.disabled]': 'disabled() ? "" : null',
+    '[attr.aria-disabled]': 'loading() && !disabled() ? "true" : null',
     '[attr.aria-busy]': 'loading() ? "true" : null',
   },
   imports: [SpinnerComponent],
   template: `
     @if (loading()) {
-      <ui-spinner size="xs" color="current" label="Loading" />
+      <span aria-hidden="true" class="inline-flex"><ui-spinner size="xs" color="current" /></span>
     }
     <ng-content />
   `,
@@ -56,11 +59,27 @@ const SIZES: Record<ButtonSize, string> = {
 export class ButtonComponent {
   readonly variant = input<ButtonVariant>('primary');
   readonly size = input<ButtonSize>('md');
-  /** Shows a spinner and blocks clicks while true. */
+  /**
+   * Shows a spinner and suppresses clicks while true. The button stays focusable
+   * (aria-disabled instead of the disabled attribute) so keyboard focus is not lost.
+   */
   readonly loading = input(false, { transform: booleanAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
 
-  protected readonly blocked = computed(() => this.disabled() || this.loading());
+  constructor() {
+    // Capture phase on the host runs before the consumer's (click) listener, so a click made
+    // while loading never reaches it. (The button is not `disabled`, to keep keyboard focus.)
+    inject<ElementRef<HTMLElement>>(ElementRef).nativeElement.addEventListener(
+      'click',
+      (event) => {
+        if (!this.loading()) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      },
+      { capture: true },
+    );
+  }
+
   protected readonly classes = computed(
     () => `${BASE} ${VARIANTS[this.variant()]} ${SIZES[this.size()]}`,
   );

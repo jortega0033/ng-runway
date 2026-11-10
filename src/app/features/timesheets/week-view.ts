@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { forkJoin } from 'rxjs';
@@ -23,6 +31,7 @@ import { formatDate, formatTime, formatWeekRange } from './timesheet-format';
 import {
   breakMinutes,
   buildWeek,
+  cappedNow,
   formatSignedDuration,
   shiftWeek,
   STATUS_VARIANT,
@@ -270,13 +279,23 @@ export class WeekViewComponent {
   private readonly weekEnd = computed(() => addDays(this.weekStart(), 6));
   private readonly locale = computed(() => this.language.language());
 
+  /**
+   * Ticks while an entry in view is still open, so its hours keep growing without a reload.
+   * Past days stop at midnight (see `cappedNow`), so a forgotten clock-out cannot inflate a week.
+   */
+  private readonly now = signal(new Date());
+  private readonly hasOpenEntry = computed(() =>
+    (this.data.value()?.entries ?? []).some((e) => e.clockOut === null),
+  );
+
+  /** `undefined` while nobody is signed in: the resource stays idle instead of loading everyone's data. */
   protected readonly data = rxResource({
-    params: () => ({
-      employeeId: this.auth.user()?.id,
-      from: this.weekStart(),
-      to: this.weekEnd(),
-      reload: this.reload(),
-    }),
+    params: () => {
+      const employeeId = this.auth.user()?.id;
+      return employeeId
+        ? { employeeId, from: this.weekStart(), to: this.weekEnd(), reload: this.reload() }
+        : undefined;
+    },
     stream: ({ params }) =>
       forkJoin({
         shifts: this.shiftsApi.list({
@@ -303,8 +322,18 @@ export class WeekViewComponent {
       this.data.value()?.shifts ?? [],
       this.data.value()?.entries ?? [],
       this.employee.value()?.contract.hoursPerWeek ?? 0,
+      this.now(),
     ),
   );
+
+  constructor() {
+    effect((onCleanup) => {
+      if (!this.hasOpenEntry()) return;
+      this.now.set(new Date());
+      const id = setInterval(() => this.now.set(new Date()), 30_000);
+      onCleanup(() => clearInterval(id));
+    });
+  }
 
   protected readonly isEmpty = computed(() =>
     this.summary().days.every((d) => d.shifts.length === 0 && d.entries.length === 0),
@@ -349,6 +378,6 @@ export class WeekViewComponent {
   }
 
   protected breakText(entry: ClockEntry): string {
-    return formatDuration(breakMinutes(entry));
+    return formatDuration(breakMinutes(entry, cappedNow(entry, this.now())));
   }
 }

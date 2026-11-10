@@ -85,10 +85,10 @@ describe('charts', () => {
     expect(stacked[0].getAttribute('x')).toBe(stacked[1].getAttribute('x'));
   });
 
-  it('exposes role=img with a label and a hidden table with every formatted value', async () => {
+  it('exposes role=group with a label and a hidden table with every formatted value', async () => {
     const { root } = await setup();
     const svg = root.querySelector('#bar svg');
-    expect(svg?.getAttribute('role')).toBe('img');
+    expect(svg?.getAttribute('role')).toBe('group');
     expect(svg?.getAttribute('aria-label')).toContain('Hours per day');
 
     const table = root.querySelector('#bar ui-chart-data-table')!;

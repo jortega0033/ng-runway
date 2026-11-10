@@ -46,7 +46,9 @@
       "previous": "Vorige pagina",
       "next": "Volgende pagina",
       "pageSize": "Rijen per pagina",
-      "page": "Pagina {{ page }}"
+      "page": "Pagina {{ page }}",
+      "summary": "{{ start }}-{{ end }} van {{ total }}",
+      "summaryEmpty": "0 van 0"
     }
   },
   "form": {

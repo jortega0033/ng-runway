@@ -176,6 +176,8 @@ const failWith = (code: RuleCode | null) => (code ? { kind: code } : null);
                 [formField]="f.startDate"
                 [buttonLabel]="'employees.form.pickers.openCalendar' | transloco"
                 [calendarLabel]="'employees.form.pickers.calendar' | transloco"
+                [previousMonthLabel]="'common.previousMonth' | transloco"
+                [nextMonthLabel]="'common.nextMonth' | transloco"
               />
             </ui-field>
             <ui-field

@@ -70,6 +70,17 @@ export function formatSignedDuration(minutes: number): string {
   return `${rounded > 0 ? '+' : '-'}${formatDuration(Math.abs(rounded))}`;
 }
 
+/**
+ * "Now" as seen by one entry. An entry that is still open counts up to `now`, but never past the
+ * end of its own day: a clock-out that was forgotten yesterday must not keep adding hours today.
+ * Closed entries do not use `now`, so they get it back unchanged.
+ */
+export function cappedNow(entry: ClockEntry, now: Date): Date {
+  if (entry.clockOut !== null) return now;
+  const endOfDay = new Date(`${addDays(entry.date, 1)}T00:00:00`);
+  return endOfDay.getTime() < now.getTime() ? endOfDay : now;
+}
+
 export interface DayRow {
   date: string;
   shifts: Shift[];
@@ -114,7 +125,7 @@ export function buildWeek(
     const scheduled = dayShifts.reduce((sum, s) => sum + shiftNetMinutes(s), 0);
     const worked = dayEntries
       .filter((e) => e.status !== 'rejected')
-      .reduce((sum, e) => sum + workedMinutes(e, now), 0);
+      .reduce((sum, e) => sum + workedMinutes(e, cappedNow(e, now)), 0);
     return {
       date,
       shifts: dayShifts,
@@ -161,18 +172,21 @@ export function applyReview(
 /**
  * Puts entries whose review failed back into the list after an optimistic update,
  * in the order they had before. Rows that are still in the list are reset to their old state.
+ * `matches` is the filter that applies now (it may differ from the one the review started
+ * under): an entry that no longer belongs in the list is not put back.
  */
 export function restoreEntries(
   current: readonly ClockEntry[],
   before: readonly ClockEntry[],
   failedIds: ReadonlySet<string>,
+  matches: (entry: ClockEntry) => boolean = () => true,
 ): ClockEntry[] {
   if (failedIds.size === 0) return [...current];
   const original = new Map(before.map((e) => [e.id, e]));
   const merged = new Map(current.map((e) => [e.id, e]));
   for (const id of failedIds) {
     const entry = original.get(id);
-    if (entry) merged.set(id, entry);
+    if (entry && matches(entry)) merged.set(id, entry);
   }
   const order = new Map(before.map((e, i) => [e.id, i]));
   return [...merged.values()].sort(

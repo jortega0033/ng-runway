@@ -46,7 +46,9 @@
       "previous": "Previous page",
       "next": "Next page",
       "pageSize": "Rows per page",
-      "page": "Page {{ page }}"
+      "page": "Page {{ page }}",
+      "summary": "{{ start }}-{{ end }} of {{ total }}",
+      "summaryEmpty": "0 of 0"
     }
   },
   "form": {

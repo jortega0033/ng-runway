@@ -47,13 +47,26 @@ describe('ButtonComponent', () => {
     expect(button().className).toContain('bg-background-danger');
   });
 
-  it('is disabled and busy while loading, and shows a spinner', async () => {
+  it('is aria-disabled and busy while loading, keeps focus and swallows clicks', async () => {
     const { fixture, button } = await setup();
+    button().focus();
     fixture.componentInstance.loading.set(true);
     await fixture.whenStable();
-    expect(button().disabled).toBe(true);
+    expect(button().disabled).toBe(false);
+    expect(button().getAttribute('aria-disabled')).toBe('true');
     expect(button().getAttribute('aria-busy')).toBe('true');
     expect(button().querySelector('ui-spinner')).not.toBeNull();
+    expect(document.activeElement).toBe(button());
+    button().click();
+    expect(fixture.componentInstance.clicks()).toBe(0);
+  });
+
+  it('keeps the real disabled attribute for [disabled]', async () => {
+    const { fixture, button } = await setup();
+    fixture.componentInstance.disabled.set(true);
+    await fixture.whenStable();
+    expect(button().disabled).toBe(true);
+    expect(button().getAttribute('aria-disabled')).toBeNull();
   });
 
   it('does not fire click when disabled', async () => {

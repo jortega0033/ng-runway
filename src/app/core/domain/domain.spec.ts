@@ -149,6 +149,75 @@ describe('conflict detection', () => {
     );
   });
 
+  describe('overnight shifts', () => {
+    const allDay: Employee = {
+      ...worker,
+      availability: Array.from({ length: 7 }, () => ({ from: '00:00', to: '24:00' })),
+    };
+    const run = (s: Shift, employee: Employee = allDay, absences: AbsenceRequest[] = none) =>
+      detectConflicts({ shift: s, employee, shifts: [s], absences }).map((c) => c.messageKey);
+
+    it('accepts one when both days are open around midnight', () => {
+      expect(run(shift({ id: 'n', start: '22:00', end: '06:00' }))).not.toContain(
+        'unavailableHours',
+      );
+    });
+
+    it('flags one when the start day closes before midnight', () => {
+      expect(run(shift({ id: 'n', start: '22:00', end: '06:00' }), worker)).toContain(
+        'unavailableHours',
+      );
+    });
+
+    it('flags one that ends after the next day window', () => {
+      // Monday 2026-11-09 into Tuesday (index 1), where the worker is only free until 05:00.
+      const tuesdayShort: Employee = {
+        ...allDay,
+        availability: allDay.availability.map((d, i) =>
+          i === 1 ? { from: '00:00', to: '05:00' } : d,
+        ),
+      };
+      expect(run(shift({ id: 'n', start: '22:00', end: '06:00' }), tuesdayShort)).toContain(
+        'unavailableHours',
+      );
+    });
+
+    it('flags one that runs into an unavailable next day', () => {
+      // Friday 2026-11-13 into Saturday, where the worker is not available at all.
+      const friday = shift({ id: 'n', date: '2026-11-13', start: '22:00', end: '06:00' });
+      expect(
+        run(friday, {
+          ...worker,
+          availability: [
+            ...worker.availability.slice(0, 4),
+            { from: '00:00', to: '24:00' },
+            null,
+            null,
+          ],
+        }),
+      ).toContain('unavailableDay');
+    });
+
+    it('flags an absence that starts the next day', () => {
+      const absence: AbsenceRequest = {
+        id: 'a2',
+        employeeId: 'e1',
+        type: 'vacation',
+        startDate: '2026-11-10',
+        endDate: '2026-11-12',
+        status: 'approved',
+        reason: '',
+        comment: '',
+      };
+      expect(run(shift({ id: 'n', start: '22:00', end: '06:00' }), allDay, [absence])).toContain(
+        'absence',
+      );
+      expect(
+        run(shift({ id: 'n', start: '08:00', end: '16:00' }), allDay, [absence]),
+      ).not.toContain('absence');
+    });
+  });
+
   it('flags weekly hours above the contract (16h)', () => {
     const existing = [
       shift({ id: 'a', date: '2026-11-09', start: '08:00', end: '16:00' }),

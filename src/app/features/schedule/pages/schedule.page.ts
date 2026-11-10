@@ -362,11 +362,13 @@ export class SchedulePage {
 
   protected async copyPreviousWeek(): Promise<void> {
     const { from, to } = this.store.weekRange();
+    const existing = this.store.scopedShifts().length;
     const ok = await this.dialogs.confirm({
       title: this.transloco.translate('schedule.dialog.copyTitle'),
-      message: this.transloco.translate('schedule.dialog.copyMessage', {
-        range: formatRange(from, to, this.lang()),
-      }),
+      message: this.transloco.translate(
+        existing > 0 ? 'schedule.dialog.copyMessageExisting' : 'schedule.dialog.copyMessage',
+        { range: formatRange(from, to, this.lang()), count: existing },
+      ),
       confirmLabel: this.transloco.translate('schedule.dialog.copyConfirm'),
       cancelLabel: this.transloco.translate('schedule.dialog.cancel'),
     });

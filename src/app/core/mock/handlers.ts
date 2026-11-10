@@ -204,8 +204,10 @@ export function createHandlers({
     http.post(
       url('/employees'),
       route(
-        async ({ request }) => {
+        async ({ request, user }) => {
           const input = (await request.json()) as EmployeeInput;
+          if (input.userRole === 'admin' && user.userRole !== 'admin')
+            return error(403, 'Only an admin can give the admin role.', 'FORBIDDEN');
           const created: Employee = { ...input, id: `emp-${crypto.randomUUID().slice(0, 8)}` };
           state().employees.push(created);
           save();
@@ -217,10 +219,16 @@ export function createHandlers({
     http.put(
       url('/employees/:id'),
       route<{ id: string }>(
-        async ({ request, params }) => {
+        async ({ request, params, user }) => {
           const index = state().employees.findIndex((e) => e.id === params.id);
           if (index < 0) return error(404, 'Employee not found.');
           const input = (await request.json()) as EmployeeInput;
+          // Only an admin can hand out or take away the admin role.
+          const current = state().employees[index];
+          if (user.userRole !== 'admin' && input.userRole !== current?.userRole) {
+            if (input.userRole === 'admin' || current?.userRole === 'admin')
+              return error(403, 'Only an admin can change the admin role.', 'FORBIDDEN');
+          }
           const updated: Employee = { ...input, id: params.id };
           state().employees[index] = updated;
           save();
@@ -370,12 +378,29 @@ export function createHandlers({
               (!teamId || s.teamId === teamId) &&
               (!locationId || s.locationId === locationId),
           );
-          const copies: Shift[] = source.map((s) => ({
-            ...s,
-            id: `shift-${crypto.randomUUID().slice(0, 8)}`,
-            date: addDays(s.date, offset),
-            status: 'draft',
-          }));
+          // Copying twice must not double the week: a shift is skipped when the target week already
+          // has one for the same person on that day (open shifts: same day, team, start and end).
+          const taken = (s: Shift) =>
+            s.employeeId
+              ? `${s.employeeId}|${s.date}`
+              : `open|${s.date}|${s.teamId}|${s.start}|${s.end}`;
+          const existing = new Set(
+            state()
+              .shifts.filter((s) => s.date >= toWeek && s.date <= addDays(toWeek, 6))
+              .map(taken),
+          );
+          const copies: Shift[] = [];
+          for (const s of source) {
+            const copy: Shift = {
+              ...s,
+              id: `shift-${crypto.randomUUID().slice(0, 8)}`,
+              date: addDays(s.date, offset),
+              status: 'draft',
+            };
+            if (existing.has(taken(copy))) continue;
+            existing.add(taken(copy));
+            copies.push(copy);
+          }
           state().shifts.push(...copies);
           save();
           return HttpResponse.json(copies, { status: 201 });
@@ -484,6 +509,8 @@ export function createHandlers({
           };
           const entry = state().clockEntries.find((c) => c.id === params.id);
           if (!entry) return error(404, 'Time entry not found.');
+          if (entry.status !== 'submitted')
+            return error(409, 'Only submitted hours can be reviewed.', 'NOT_SUBMITTED');
           if (status === 'rejected' && !comment?.trim())
             return error(422, 'Add a comment when you reject.');
           entry.status = status;
@@ -530,8 +557,12 @@ export function createHandlers({
     http.get(
       url('/absences/balances'),
       route(({ url: u, user }) => {
-        const employeeId = u.searchParams.get('employeeId') ?? user.id;
-        const year = Number(u.searchParams.get('year') ?? now().getFullYear());
+        // Employees only see their own balances.
+        const employeeId = isManager(user)
+          ? (u.searchParams.get('employeeId') ?? user.id)
+          : user.id;
+        const requestedYear = Number(u.searchParams.get('year') ?? now().getFullYear());
+        const year = Number.isInteger(requestedYear) ? requestedYear : now().getFullYear();
         const balances: AbsenceBalance[] = state()
           .absenceTypes.filter((t) => t.yearlyDays !== null)
           .map((t) => computeBalance(employeeId, t, state().absences, year));
@@ -544,6 +575,8 @@ export function createHandlers({
         const input = (await request.json()) as AbsenceRequestInput;
         if (input.endDate < input.startDate)
           return error(422, 'The end date is before the start date.');
+        if (!state().absenceTypes.some((t) => t.key === input.type))
+          return error(422, 'Unknown absence type.');
         const owner = isManager(user)
           ? (state().employees.find((e) => e.id === input.employeeId) ?? user)
           : user;
@@ -577,6 +610,9 @@ export function createHandlers({
           };
           const absence = state().absences.find((a) => a.id === params.id);
           if (!absence) return error(404, 'Request not found.');
+          if (absence.status !== 'pending')
+            return error(409, 'This request was already reviewed.', 'NOT_PENDING');
+          // The reject dialog in the UI treats the comment as optional, so the mock does too.
           absence.status = status;
           absence.comment = comment ?? '';
           notify(

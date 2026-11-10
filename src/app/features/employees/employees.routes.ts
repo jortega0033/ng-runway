@@ -13,15 +13,18 @@ export const EMPLOYEES_ROUTES: Routes = [
       },
       {
         path: 'new',
+        title: 'titles.employeeNew',
         loadComponent: () => import('./pages/employee-form.page').then((m) => m.EmployeeFormPage),
       },
       {
         path: ':id',
+        title: 'titles.employeeProfile',
         loadComponent: () =>
           import('./pages/employee-profile.page').then((m) => m.EmployeeProfilePage),
       },
       {
         path: ':id/edit',
+        title: 'titles.employeeEdit',
         loadComponent: () => import('./pages/employee-form.page').then((m) => m.EmployeeFormPage),
       },
     ],

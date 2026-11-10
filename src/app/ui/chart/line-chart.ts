@@ -9,13 +9,15 @@ import {
 import {
   CHART_MARGIN,
   CHART_WIDTH,
-  DEFAULT_FORMATTER,
+  DEFAULT_SUMMARY,
+  numberFormatter,
   SERIES_DASHES,
   hasChartData,
   injectChartColors,
   niceScale,
   seriesColor,
   type ChartSeries,
+  type ChartSummaryFn,
   type ChartValueFormatter,
 } from './chart-core';
 import {
@@ -55,7 +57,7 @@ interface Line {
       <figure class="m-0 flex flex-col gap-3">
         <svg
           class="block h-auto w-full"
-          role="img"
+          role="group"
           [attr.viewBox]="'0 0 ' + width + ' ' + height()"
           [attr.aria-label]="ariaLabel()"
         >
@@ -75,7 +77,7 @@ interface Line {
               font-size="11"
               [attr.fill]="colors().support"
             >
-              {{ format()(tick) }}
+              {{ formatter()(tick) }}
             </text>
           }
 
@@ -152,7 +154,7 @@ interface Line {
           [categoryHeader]="categoryHeader()"
           [categories]="categories()"
           [series]="series()"
-          [format]="format()"
+          [format]="formatter()"
         />
       </figure>
     } @else {
@@ -175,7 +177,12 @@ export class LineChartComponent {
   readonly categories = input.required<readonly string[]>();
   /** Accessible name and table caption, for example "Headcount by month". */
   readonly label = input('Line chart');
-  readonly format = input<ChartValueFormatter>(DEFAULT_FORMATTER);
+  /** Value formatter. Defaults to `locale` number formatting. */
+  readonly format = input<ChartValueFormatter | null>(null);
+  /** BCP 47 locale for the default number format, normally the active app language. */
+  readonly locale = input('en');
+  /** Builds the accessible sentence of the svg, e.g. "Hours. 2 series, 5 categories." */
+  readonly summaryLabel = input<ChartSummaryFn>(DEFAULT_SUMMARY);
   /** Height of the drawing in viewBox units; the svg still fills the container width. */
   readonly height = input(280);
   /** Fill the space between each line and the zero baseline. Off by default. */
@@ -186,15 +193,20 @@ export class LineChartComponent {
 
   protected readonly hasData = computed(() => hasChartData(this.series(), this.categories()));
 
-  protected readonly ariaLabel = computed(
-    () =>
-      `${this.label()}. ${this.series().length} series, ${this.categories().length} categories. Data table follows.`,
+  protected readonly formatter = computed(() => this.format() ?? numberFormatter(this.locale()));
+
+  protected readonly ariaLabel = computed(() =>
+    this.summaryLabel()({
+      label: this.label(),
+      series: this.series().length,
+      categories: this.categories().length,
+    }),
   );
 
   protected readonly layout = computed(() => {
     const series = this.series();
     const categories = this.categories();
-    const format = this.format();
+    const format = this.formatter();
     const palette = this.colors().series;
     const plotW = CHART_WIDTH - CHART_MARGIN.left - CHART_MARGIN.right;
     const plotH = this.height() - CHART_MARGIN.top - CHART_MARGIN.bottom;

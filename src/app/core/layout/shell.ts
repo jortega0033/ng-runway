@@ -1,6 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  type ElementRef,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../auth/auth.service';
 import { CommandPaletteComponent } from '../command-palette/command-palette';
@@ -48,6 +57,7 @@ const THEME_ICON: Record<ThemePreference, IconName> = {
   template: `
     <a
       href="#main"
+      (click)="skipToMain($event)"
       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background-primary focus:px-3 focus:py-2 focus:text-foreground-on-primary"
     >
       {{ 'shell.skipToContent' | transloco }}
@@ -120,12 +130,15 @@ const THEME_ICON: Record<ThemePreference, IconName> = {
           </div>
         </ui-top-bar>
         <app-offline-banner />
-        <main id="main" tabindex="-1" class="min-h-0 flex-1 overflow-auto p-6 outline-none">
+        <main #main id="main" tabindex="-1" class="min-h-0 flex-1 overflow-auto p-6 outline-none">
           <router-outlet />
         </main>
       </div>
     </div>
-    <ui-toast-container />
+    <ui-toast-container
+      [label]="'shell.notifications' | transloco"
+      [dismissLabel]="'shell.dismissNotification' | transloco"
+    />
     <app-command-palette />
     @if (devTools) {
       <app-dev-toolbar />
@@ -138,6 +151,8 @@ export class ShellComponent {
   protected readonly language = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
   private readonly lang = toSignal(this.transloco.langChanges$);
+  private readonly router = inject(Router);
+  private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
   protected readonly collapsed = signal(typeof window !== 'undefined' && window.innerWidth < 1024);
   protected readonly devTools = devToolbarEnabled();
@@ -150,6 +165,35 @@ export class ShellComponent {
     this.lang(); // re-run when the language changes
     return navFor(this.auth.role(), (key) => this.transloco.translate(key));
   });
+
+  constructor() {
+    // The shell is created during the first navigation, so `lastSuccessfulNavigation` is still
+    // empty on a fresh page load (focus stays put) and set after sign-in (focus moves).
+    let previous: string | null =
+      this.router.lastSuccessfulNavigation()?.finalUrl?.toString().split(/[?#]/)[0] ?? null;
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe((event) => {
+        // Only a different page moves focus; query-string changes (filters, paging) must not.
+        const path = event.urlAfterRedirects.split(/[?#]/)[0] ?? '';
+        const moved = previous !== null && path !== previous;
+        previous = path;
+        if (moved) this.focusMain();
+      });
+  }
+
+  protected skipToMain(event: Event): void {
+    // A plain "#main" href would resolve against <base href="/"> and leave the page.
+    event.preventDefault();
+    this.focusMain();
+  }
+
+  protected focusMain(): void {
+    this.main().nativeElement.focus();
+  }
 
   protected readonly themeIcon = computed(() => THEME_ICON[this.theme.preference()]);
 

@@ -59,6 +59,7 @@
     "allStatuses": "Alle statussen",
     "allWeeks": "Alle weken",
     "approveSelected": "Geselecteerde goedkeuren ({{ count }})",
+    "remaining": "Nog te beoordelen: {{ count }}",
     "tableLabel": "Te beoordelen urenregistraties",
     "emptyTitle": "Niets te beoordelen",
     "emptyText": "Geen urenregistraties voldoen aan deze filters. Ingediende uren verschijnen hier zodra medewerkers uitklokken.",

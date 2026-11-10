@@ -2,6 +2,7 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { API_BASE_URL } from '@core/api/api-config';
 import type { LoginResponse, Shift, UserRole } from '@core/api/models';
@@ -16,7 +17,7 @@ import { createSeed } from '@core/mock/seed';
 import { provideTestTransloco } from '../../testing/transloco-testing';
 import { ToastService } from '@ui/toast/toast';
 import scheduleEn from '../../../../public/i18n/schedule/en.json';
-import { moveToTarget } from './schedule.layout';
+import { moveToTarget, toInput } from './schedule.layout';
 import { SCHEDULE_TODAY, ScheduleStore } from './schedule.store';
 
 const BASE = 'http://localhost/api';
@@ -330,14 +331,15 @@ describe('ScheduleStore', () => {
   it('copies the previous week as drafts', async () => {
     const store = createStore();
     await loaded(store);
-    store.goToDate('2026-12-07'); // last week of the seed, all drafts
+    store.goToDate('2026-12-14'); // the week after the seed, still empty
     await vi.waitFor(() => {
       TestBed.tick();
-      expect(store.draftCount()).toBeGreaterThan(0);
+      expect(store.query().from).toBe('2026-12-14');
+      expect(store.loadingWeek()).toBe(false);
     });
     const before = store.shifts().length;
     const previousWeek = db.state.shifts.filter(
-      (s) => s.date >= '2026-11-30' && s.date <= '2026-12-06',
+      (s) => s.date >= '2026-12-07' && s.date <= '2026-12-13',
     );
 
     expect(await store.copyPreviousWeek()).toBe(previousWeek.length);
@@ -345,7 +347,7 @@ describe('ScheduleStore', () => {
     expect(store.copying()).toBe(false);
     const copied = store.shifts().filter((s) => !db.state.shifts.some((d) => d.id === s.id));
     expect(copied).toHaveLength(0); // every copy exists on the server too
-    expect(store.shifts().filter((s) => s.date >= '2026-12-07').length).toBe(
+    expect(store.shifts().filter((s) => s.date >= '2026-12-14').length).toBe(
       before + previousWeek.length,
     );
   });
@@ -368,6 +370,75 @@ describe('ScheduleStore', () => {
 
     expect(await store.createShift({ ...assignedShiftInput(), employeeId: null })).toBeNull();
     expect(await store.publishWeek()).toBeNull();
+  });
+
+  it('ignores shifts of other weeks in counts and when publishing', async () => {
+    const store = createStore();
+    await loaded(store);
+    const shift = assignedShift(store);
+    const before = store.shifts().length;
+    expect(store.draftCount()).toBe(0);
+
+    // Edit a shift into a draft two weeks ahead: it leaves the loaded week.
+    const moved = await store.updateShift(shift.id, {
+      ...toInput(shift),
+      date: addDays(shift.date, 14),
+      status: 'draft',
+    });
+    expect(moved).toBe(true);
+    expect(store.entityMap()[shift.id]).toBeUndefined();
+    expect(store.shifts()).toHaveLength(before - 1);
+    expect(store.draftCount()).toBe(0);
+    expect(store.publishedCount()).toBe(before - 1);
+
+    // A stray draft of another week in the collection is not counted or published either.
+    const published = await store.publishWeek();
+    expect(published).toBe(0);
+    expect(db.state.shifts.find((x) => x.id === shift.id)?.status).toBe('draft');
+  });
+
+  it('copies a week once: the second copy adds nothing', async () => {
+    const store = createStore();
+    await loaded(store);
+    // 14 Dec has no shifts in the seed; the week before it does.
+    store.goToDate('2026-12-14');
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(store.query().from).toBe('2026-12-14');
+      expect(store.loadingWeek()).toBe(false);
+    });
+    expect(store.shifts()).toHaveLength(0);
+
+    const first = await store.copyPreviousWeek();
+    expect(first).toBeGreaterThan(0);
+    const count = store.shifts().length;
+    expect(count).toBe(first);
+
+    const second = await store.copyPreviousWeek();
+    expect(second).toBe(0);
+    expect(store.shifts()).toHaveLength(count);
+  });
+
+  it('keeps a lookups error when the week loads fine', async () => {
+    server.use(http.get(`${BASE}/teams`, () => HttpResponse.json({}, { status: 500 })));
+    const store = createStore();
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(store.loadingLookups()).toBe(false);
+      expect(store.loadingWeek()).toBe(false);
+    });
+    expect(store.lookupsError()).toBe(true);
+    expect(store.weekError()).toBe(false);
+
+    store.next();
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(store.query().from).toBe(addDays(TODAY, 7));
+      expect(store.loadingWeek()).toBe(false);
+    });
+    expect(store.weekError()).toBe(false);
+    expect(store.lookupsError()).toBe(true);
+    expect(store.error()).toBe(true);
   });
 
   it('shows the error state and recovers on retry', async () => {

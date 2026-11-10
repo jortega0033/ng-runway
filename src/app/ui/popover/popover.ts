@@ -56,6 +56,7 @@ function positionsFor(position: PopoverPosition): ConnectedPosition[] {
  * In `click` mode the host toggles the popover and gets aria-expanded / aria-controls.
  * In `manual` mode the host is only the anchor; call `open()`, `close()` or `toggle()`.
  * Escape closes it and returns focus to where it was before opening; a click outside closes it.
+ * In `manual` mode, moving focus outside both the host and the panel (Tab out) also closes it.
  */
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector -- UI library prefix is `ui`
@@ -158,6 +159,23 @@ export class PopoverTriggerDirective {
         this.close(false);
       }),
     );
+
+    if (this.uiPopoverMode() === 'manual') {
+      // Tabbing out of the anchor or the panel closes it; a click elsewhere is handled above.
+      const host = this.host.nativeElement;
+      const onFocusOut = (event: FocusEvent): void => {
+        const next = event.relatedTarget;
+        if (!(next instanceof Node)) return;
+        if (host.contains(next) || pane.contains(next)) return;
+        this.close(false);
+      };
+      host.addEventListener('focusout', onFocusOut);
+      pane.addEventListener('focusout', onFocusOut);
+      this.subscription.add(() => {
+        host.removeEventListener('focusout', onFocusOut);
+        pane.removeEventListener('focusout', onFocusOut);
+      });
+    }
 
     this.open$.set(true);
     if (this.uiPopoverAutofocus()) {

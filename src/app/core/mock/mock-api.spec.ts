@@ -206,6 +206,98 @@ describe('mock API', () => {
     expect(after.pendingDays).toBe(before.pendingDays);
   });
 
+  it('only reviews pending absences and submitted time entries', async () => {
+    const manager = await login('manager');
+    const approved = db.state.absences.find((a) => a.status === 'approved')!;
+    const absenceRes = await fetch(`${BASE}/absences/${approved.id}/review`, {
+      method: 'POST',
+      headers: manager,
+      body: JSON.stringify({ status: 'rejected', comment: 'Changed my mind' }),
+    });
+    expect(absenceRes.status).toBe(409);
+    expect(db.state.absences.find((a) => a.id === approved.id)?.status).toBe('approved');
+
+    const done = db.state.clockEntries.find((c) => c.status === 'approved')!;
+    const entryRes = await fetch(`${BASE}/clock-entries/${done.id}/review`, {
+      method: 'POST',
+      headers: manager,
+      body: JSON.stringify({ status: 'rejected', comment: 'Too late' }),
+    });
+    expect(entryRes.status).toBe(409);
+    expect(db.state.clockEntries.find((c) => c.id === done.id)?.status).toBe('approved');
+  });
+
+  it('shows employees their own balances and rejects unknown absence types', async () => {
+    const employee = await login('employee');
+    const me = db.state.employees.find((e) => e.userRole === 'employee')!;
+    const other = db.state.employees.find((e) => e.id !== me.id && e.userRole === 'employee')!;
+    const balances = (await (
+      await fetch(`${BASE}/absences/balances?employeeId=${other.id}&year=abc`, {
+        headers: employee,
+      })
+    ).json()) as AbsenceBalance[];
+    expect(balances.length).toBeGreaterThan(0);
+    expect(balances.every((b) => b.employeeId === me.id)).toBe(true);
+
+    const res = await fetch(`${BASE}/absences`, {
+      method: 'POST',
+      headers: employee,
+      body: JSON.stringify({
+        employeeId: me.id,
+        type: 'sabbatical-on-mars',
+        startDate: '2026-11-16',
+        endDate: '2026-11-17',
+        reason: '',
+      }),
+    });
+    expect(res.status).toBe(422);
+  });
+
+  it('lets only an admin hand out the admin role', async () => {
+    const manager = await login('manager');
+    const admin = await login('admin');
+    const template = db.state.employees.find((e) => e.userRole === 'employee')!;
+    const base: Partial<Employee> = { ...template };
+    delete base.id;
+    const asAdmin = { ...base, email: 'new.admin@example.com', userRole: 'admin' as const };
+
+    const denied = await fetch(`${BASE}/employees`, {
+      method: 'POST',
+      headers: manager,
+      body: JSON.stringify(asAdmin),
+    });
+    expect(denied.status).toBe(403);
+    const promote = await fetch(`${BASE}/employees/${template.id}`, {
+      method: 'PUT',
+      headers: manager,
+      body: JSON.stringify({ ...base, userRole: 'admin' }),
+    });
+    expect(promote.status).toBe(403);
+    expect(db.state.employees.find((e) => e.id === template.id)?.userRole).toBe('employee');
+
+    const allowed = await fetch(`${BASE}/employees`, {
+      method: 'POST',
+      headers: admin,
+      body: JSON.stringify(asAdmin),
+    });
+    expect(allowed.status).toBe(201);
+  });
+
+  it('copies a week once: a second copy adds nothing', async () => {
+    const headers = await login('manager');
+    const body = JSON.stringify({ fromWeek: '2026-11-09', toWeek: '2026-12-21' });
+    const first = (await (
+      await fetch(`${BASE}/shifts/copy-week`, { method: 'POST', headers, body })
+    ).json()) as Shift[];
+    expect(first.length).toBeGreaterThan(0);
+    const count = db.state.shifts.length;
+    const second = (await (
+      await fetch(`${BASE}/shifts/copy-week`, { method: 'POST', headers, body })
+    ).json()) as Shift[];
+    expect(second).toHaveLength(0);
+    expect(db.state.shifts).toHaveLength(count);
+  });
+
   it('builds a report per team', async () => {
     const headers = await login('admin');
     const report = (await (

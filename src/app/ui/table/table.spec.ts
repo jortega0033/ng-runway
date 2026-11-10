@@ -159,7 +159,9 @@ describe('TableComponent', () => {
     await settle();
     expect(host.selected().map((r) => r.id)).toEqual([1]);
     expect(all.indeterminate).toBe(true);
-    expect(root.querySelectorAll('[role="row"][aria-selected="true"]').length).toBe(1);
+    // role=table rows do not support aria-selected: the checkbox carries the state.
+    expect(root.querySelectorAll('[aria-selected]').length).toBe(0);
+    expect(boxes().filter((b) => b.checked).length).toBe(1);
 
     all.click();
     await settle();

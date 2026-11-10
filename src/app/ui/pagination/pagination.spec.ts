@@ -59,7 +59,7 @@ describe('PaginationComponent', () => {
   it('marks the current page and moves with next and previous', async () => {
     const { host, root, settle, button } = await setup();
     expect(button('Page 1').getAttribute('aria-current')).toBe('page');
-    expect(button('Previous page').disabled).toBe(true);
+    expect(button('Previous page').getAttribute('aria-disabled')).toBe('true');
 
     button('Next page').click();
     await settle();
@@ -76,8 +76,16 @@ describe('PaginationComponent', () => {
     const { host, root, settle, button } = await setup();
     host.page.set(8);
     await settle();
-    expect(button('Next page').disabled).toBe(true);
+    expect(button('Next page').getAttribute('aria-disabled')).toBe('true');
     expect(root.querySelector('p')!.textContent).toBe('141-143 of 143');
+  });
+
+  it('keeps the ends focusable and ignores clicks on them', async () => {
+    const { host, settle, button } = await setup();
+    expect(button('Previous page').disabled).toBe(false);
+    button('Previous page').click();
+    await settle();
+    expect(host.page()).toBe(1);
   });
 
   it('returns to page 1 when the page size changes', async () => {
@@ -98,6 +106,6 @@ describe('PaginationComponent', () => {
     host.total.set(0);
     await settle();
     expect(root.querySelector('p')!.textContent).toBe('0 of 0');
-    expect(button('Next page').disabled).toBe(true);
+    expect(button('Next page').getAttribute('aria-disabled')).toBe('true');
   });
 });

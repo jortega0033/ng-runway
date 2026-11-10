@@ -9,7 +9,8 @@ import {
 import {
   CHART_MARGIN,
   CHART_WIDTH,
-  DEFAULT_FORMATTER,
+  DEFAULT_SUMMARY,
+  numberFormatter,
   chartId,
   hasChartData,
   injectChartColors,
@@ -17,6 +18,7 @@ import {
   patternFor,
   seriesColor,
   type ChartSeries,
+  type ChartSummaryFn,
   type ChartValueFormatter,
   type SeriesPattern,
 } from './chart-core';
@@ -54,7 +56,7 @@ interface Bar {
       <figure class="m-0 flex flex-col gap-3">
         <svg
           class="block h-auto w-full"
-          role="img"
+          role="group"
           [attr.viewBox]="'0 0 ' + width + ' ' + height()"
           [attr.aria-label]="ariaLabel()"
         >
@@ -101,7 +103,7 @@ interface Bar {
               font-size="11"
               [attr.fill]="colors().support"
             >
-              {{ format()(tick) }}
+              {{ formatter()(tick) }}
             </text>
           }
 
@@ -170,7 +172,7 @@ interface Bar {
           [categoryHeader]="categoryHeader()"
           [categories]="categories()"
           [series]="series()"
-          [format]="format()"
+          [format]="formatter()"
         />
       </figure>
     } @else {
@@ -194,26 +196,38 @@ export class BarChartComponent {
   readonly categories = input.required<readonly string[]>();
   /** Accessible name and table caption, for example "Overtime hours per week". */
   readonly label = input('Bar chart');
-  readonly format = input<ChartValueFormatter>(DEFAULT_FORMATTER);
+  /** Value formatter. Defaults to `locale` number formatting. */
+  readonly format = input<ChartValueFormatter | null>(null);
+  /** BCP 47 locale for the default number format, normally the active app language. */
+  readonly locale = input('en');
+  /** Builds the accessible sentence of the svg, e.g. "Hours. 2 series, 5 categories." */
+  readonly summaryLabel = input<ChartSummaryFn>(DEFAULT_SUMMARY);
   /** Height of the drawing in viewBox units; the svg still fills the container width. */
   readonly height = input(280);
   readonly stacked = input(false, { transform: booleanAttribute });
   readonly showLegend = input(true, { transform: booleanAttribute });
   readonly emptyText = input('No data to display');
   readonly categoryHeader = input('Category');
+  readonly totalLabel = input('Total');
 
   protected readonly hasData = computed(() => hasChartData(this.series(), this.categories()));
 
-  protected readonly ariaLabel = computed(
-    () =>
-      `${this.label()}. ${this.series().length} series, ${this.categories().length} categories. Data table follows.`,
+  protected readonly formatter = computed(() => this.format() ?? numberFormatter(this.locale()));
+
+  protected readonly ariaLabel = computed(() =>
+    this.summaryLabel()({
+      label: this.label(),
+      series: this.series().length,
+      categories: this.categories().length,
+    }),
   );
 
   protected readonly layout = computed(() => {
     const series = this.series();
     const categories = this.categories();
     const stacked = this.stacked();
-    const format = this.format();
+    const format = this.formatter();
+    const totalLabel = this.totalLabel();
     const palette = this.colors().series;
     const plotW = CHART_WIDTH - CHART_MARGIN.left - CHART_MARGIN.right;
     const plotH = this.height() - CHART_MARGIN.top - CHART_MARGIN.bottom;
@@ -265,7 +279,9 @@ export class BarChartComponent {
         const x = stacked ? bandX : bandX + si * groupWidth;
         const tooltip = [category, `${s.name}: ${format(value)}`];
         if (stacked && series.length > 1) {
-          tooltip.push(`Total: ${format(series.reduce((sum, t) => sum + (t.values[i] ?? 0), 0))}`);
+          tooltip.push(
+            `${totalLabel}: ${format(series.reduce((sum, t) => sum + (t.values[i] ?? 0), 0))}`,
+          );
         }
         bars.push({
           key: `${si}-${i}`,

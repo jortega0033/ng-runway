@@ -216,6 +216,8 @@ const dayValidator: ValidatorFn = (group): ValidationErrors | null => {
               <ui-date-picker
                 [buttonLabel]="'employees.form.pickers.openCalendar' | transloco"
                 [calendarLabel]="'employees.form.pickers.calendar' | transloco"
+                [previousMonthLabel]="'common.previousMonth' | transloco"
+                [nextMonthLabel]="'common.nextMonth' | transloco"
                 [value]="c.startDate.value"
                 (valueChange)="c.startDate.setValue($event)"
                 (touch)="c.startDate.markAsTouched()"

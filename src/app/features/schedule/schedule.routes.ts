@@ -12,6 +12,7 @@ import { ScheduleStore } from './schedule.store';
 export const SCHEDULE_ROUTES: Routes = [
   {
     path: '',
+    title: 'nav.schedule',
     providers: [provideTranslocoScope('schedule'), ScheduleStore],
     // Wait for the schedule texts before the page opens: it builds some labels in code, and those
     // would show raw keys if they were read before the texts arrive.

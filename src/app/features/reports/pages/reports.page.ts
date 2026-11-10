@@ -27,6 +27,7 @@ import {
   PageHeaderComponent,
   SkeletonComponent,
   TableComponent,
+  type ChartSummaryFn,
   type ComboOption,
   type TableCellContext,
   type TableColumn,
@@ -96,6 +97,8 @@ const PRESETS: readonly RangePreset[] = ['this-week', 'last-4-weeks', 'this-mont
             [invalid]="!!rangeError()"
             [buttonLabel]="'reports.chooseDate' | transloco"
             [calendarLabel]="'reports.calendar' | transloco"
+            [previousMonthLabel]="'common.previousMonth' | transloco"
+            [nextMonthLabel]="'common.nextMonth' | transloco"
           />
         </ui-field>
         <ui-field [label]="'common.to' | transloco">
@@ -105,6 +108,8 @@ const PRESETS: readonly RangePreset[] = ['this-week', 'last-4-weeks', 'this-mont
             [min]="from() || undefined"
             [buttonLabel]="'reports.chooseDate' | transloco"
             [calendarLabel]="'reports.calendar' | transloco"
+            [previousMonthLabel]="'common.previousMonth' | transloco"
+            [nextMonthLabel]="'common.nextMonth' | transloco"
           />
         </ui-field>
         <div class="flex gap-2" role="group" [attr.aria-label]="'reports.presets' | transloco">
@@ -185,6 +190,8 @@ const PRESETS: readonly RangePreset[] = ['this-week', 'last-4-weeks', 'this-mont
             [categories]="teamNames()"
             [series]="barSeries()"
             [format]="formatHoursUnit()"
+            [summaryLabel]="chartSummary()"
+            [totalLabel]="'reports.total' | transloco"
             [categoryHeader]="'reports.team' | transloco"
             [emptyText]="'reports.noChartData' | transloco"
           />
@@ -201,6 +208,7 @@ const PRESETS: readonly RangePreset[] = ['this-week', 'last-4-weeks', 'this-mont
             [categories]="dayLabels()"
             [series]="lineSeries()"
             [format]="formatHoursUnit()"
+            [summaryLabel]="chartSummary()"
             [categoryHeader]="'reports.date' | transloco"
             [emptyText]="'reports.noChartData' | transloco"
           />
@@ -252,6 +260,11 @@ export class ReportsPage {
     this.scopeLoaded();
     return this.transloco.translate(key);
   };
+
+  protected readonly chartSummary = computed<ChartSummaryFn>(() => {
+    this.scopeLoaded();
+    return (info) => this.transloco.translate('reports.chartSummary', info);
+  });
 
   protected readonly tableRows = computed<ReportTableRow[]>(() => {
     const result = this.report.value();

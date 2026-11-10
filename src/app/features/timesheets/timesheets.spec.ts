@@ -265,6 +265,45 @@ describe('approvals', () => {
     expect(dataRows(root)).toHaveLength(before.length - 2);
   });
 
+  it('clears the selection when a filter changes and never approves rows that are gone', async () => {
+    const { root, fixture } = await render();
+    const boxes = root.querySelectorAll<HTMLInputElement>(
+      '[role=rowgroup]:last-child input[type=checkbox]',
+    );
+    boxes[0]?.click();
+    await fixture.whenStable();
+    expect(buttonStartingWith(root, 'Approve selected')?.textContent).toContain('(1)');
+
+    const statusSelect = root.querySelectorAll<HTMLSelectElement>('select')[1]!;
+    statusSelect.value = 'approved';
+    statusSelect.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    const bulk = buttonStartingWith(root, 'Approve selected')!;
+    expect(bulk.textContent).toContain('(0)');
+    expect(bulk.disabled).toBe(true);
+  });
+
+  it('moves focus to the next row and announces how many are left after a review', async () => {
+    const expected = submittedForTeam();
+    const { root } = await render();
+    const first = root.querySelector<HTMLButtonElement>('button[data-entry-id]')!;
+    const firstId = first.dataset['entryId'];
+    first.focus();
+
+    const dialog = await openReview(root, 'Approve hours of');
+    buttonByName(dialog, 'Approve')?.click();
+    await vi.waitFor(() => expect(dataRows(root)).toHaveLength(expected.length - 1));
+
+    await vi.waitFor(() => {
+      const active = document.activeElement as HTMLElement;
+      expect(active.dataset['entryId']).toBeTruthy();
+      expect(active.dataset['entryId']).not.toBe(firstId);
+    });
+    expect(root.querySelector('[role=status]')?.textContent).toContain(
+      `Entries waiting for review: ${expected.length - 1}`,
+    );
+  });
+
   it('rolls the list back when the server refuses the review', async () => {
     const before = submittedForTeam();
     const { root } = await render();

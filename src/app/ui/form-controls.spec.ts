@@ -59,6 +59,57 @@ class Host {
   };
 }
 
+@Component({
+  imports: [FieldComponent, RadioGroupComponent, SegmentedComponent],
+  template: `
+    <ui-field label="Mode" hint="Pick one" [error]="error()">
+      <ui-radio-group [options]="options" />
+    </ui-field>
+    <ui-field label="Range"><ui-segmented [options]="options" /></ui-field>
+  `,
+})
+class GroupHost {
+  readonly options = OPTIONS;
+  readonly error = signal('');
+}
+
+describe('grouped controls inside ui-field', () => {
+  it('label the group, describe it and flag it invalid', async () => {
+    const fixture = TestBed.createComponent(GroupHost);
+    await fixture.whenStable();
+    const root = fixture.nativeElement as HTMLElement;
+    const groups = root.querySelectorAll<HTMLElement>('[role="radiogroup"]');
+    const label = root.querySelector('ui-field > label')!;
+
+    expect(groups[0].getAttribute('aria-labelledby')).toBe(label.id);
+    expect(groups[0].id).toBe(label.getAttribute('for'));
+    expect(groups[1].getAttribute('aria-labelledby')).toBe(
+      root.querySelectorAll('ui-field > label')[1]?.id,
+    );
+    expect(groups[0].getAttribute('aria-invalid')).toBeNull();
+
+    fixture.componentInstance.error.set('Choose a mode');
+    await fixture.whenStable();
+    expect(groups[0].getAttribute('aria-invalid')).toBe('true');
+    expect(root.querySelector(`#${groups[0].getAttribute('aria-describedby')}`)?.textContent).toBe(
+      'Choose a mode',
+    );
+  });
+
+  it('renders the error inside a live region that exists before the error does', async () => {
+    const fixture = TestBed.createComponent(GroupHost);
+    await fixture.whenStable();
+    const root = fixture.nativeElement as HTMLElement;
+    const live = root.querySelector('ui-field [aria-live="polite"]');
+    expect(live).not.toBeNull();
+    expect(live?.textContent?.trim()).toBe('');
+    fixture.componentInstance.error.set('Choose a mode');
+    await fixture.whenStable();
+    expect(root.querySelector('ui-field [aria-live="polite"]')).toBe(live);
+    expect(live?.textContent?.trim()).toBe('Choose a mode');
+  });
+});
+
 describe('form controls with Signal Forms', () => {
   async function setup() {
     const fixture = TestBed.createComponent(Host);
@@ -70,7 +121,7 @@ describe('form controls with Signal Forms', () => {
   it('labels the input through ui-field and wires the hint', async () => {
     const { root } = await setup();
     const input = root.querySelector<HTMLInputElement>('input[type=text]')!;
-    const label = root.querySelector('label')!;
+    const label = root.querySelector('ui-field > label')!;
     expect(label.getAttribute('for')).toBe(input.id);
     expect(input.getAttribute('aria-describedby')).toBeTruthy();
     expect(root.querySelector(`#${input.getAttribute('aria-describedby')}`)?.textContent).toContain(

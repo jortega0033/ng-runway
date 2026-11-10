@@ -181,13 +181,19 @@ export class MyAbsencesComponent {
     return this.transloco.translate(key, params);
   };
 
+  /** `undefined` while nobody is signed in: the resources then stay idle instead of asking for everyone. */
+  private readonly params = computed(() => {
+    const employeeId = this.auth.user()?.id;
+    return employeeId ? { employeeId, reload: this.reload() } : undefined;
+  });
+
   protected readonly balances = rxResource({
-    params: () => ({ employeeId: this.auth.user()?.id, reload: this.reload() }),
+    params: this.params,
     stream: ({ params }) => this.api.balances(params.employeeId),
   });
 
   protected readonly requests = rxResource({
-    params: () => ({ employeeId: this.auth.user()?.id, reload: this.reload() }),
+    params: this.params,
     stream: ({ params }) => this.api.list({ employeeId: params.employeeId }),
   });
 

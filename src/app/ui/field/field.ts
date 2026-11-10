@@ -11,6 +11,8 @@ import {
 /** What a control needs from its surrounding `ui-field` to be labelled and described. */
 export interface FieldContext {
   readonly controlId: Signal<string>;
+  /** Id of the visible label, for grouped controls that use aria-labelledby. */
+  readonly labelId: string;
   readonly describedBy: Signal<string | null>;
   readonly invalid: Signal<boolean>;
   readonly required: Signal<boolean>;
@@ -30,7 +32,7 @@ let nextId = 0;
   providers: [{ provide: FIELD_CONTEXT, useExisting: FieldComponent }],
   host: { class: 'flex flex-col gap-1.5' },
   template: `
-    <label [attr.for]="controlId()" class="text-base font-medium text-foreground">
+    <label [id]="labelId" [attr.for]="controlId()" class="text-base font-medium text-foreground">
       {{ label() }}
       @if (required()) {
         <span aria-hidden="true" class="text-foreground-danger">*</span>
@@ -40,11 +42,12 @@ let nextId = 0;
     @if (hint() && !error()) {
       <p [id]="hintId" class="text-sm text-foreground-subtle">{{ hint() }}</p>
     }
-    @if (error()) {
-      <p [id]="errorId" class="text-sm text-foreground-danger" aria-live="polite">
-        {{ error() }}
-      </p>
-    }
+    <!-- Always rendered so screen readers register the live region before an error appears. -->
+    <div aria-live="polite" [class.-mt-1.5]="!error()">
+      @if (error()) {
+        <p [id]="errorId" class="text-sm text-foreground-danger">{{ error() }}</p>
+      }
+    </div>
   `,
 })
 export class FieldComponent implements FieldContext {
@@ -57,6 +60,7 @@ export class FieldComponent implements FieldContext {
   readonly forId = input<string | null>(null);
 
   private readonly uid = `ui-field-${nextId++}`;
+  readonly labelId = `${this.uid}-label`;
   protected readonly hintId = `${this.uid}-hint`;
   protected readonly errorId = `${this.uid}-error`;
 

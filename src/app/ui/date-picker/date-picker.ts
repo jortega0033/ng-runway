@@ -86,6 +86,8 @@ import { fromIso, toIso } from './date-utils';
         [min]="min() ?? ''"
         [max]="max() ?? ''"
         [weekStartsOn]="weekStartsOn()"
+        [previousMonthLabel]="previousMonthLabel()"
+        [nextMonthLabel]="nextMonthLabel()"
         (selected)="pick($event, close)"
       />
     </ng-template>
@@ -109,6 +111,8 @@ export class DatePickerComponent implements FormValueControl<string> {
   readonly weekStartsOn = input<0 | 1 | 2 | 3 | 4 | 5 | 6>(1);
   readonly buttonLabel = input('Choose date');
   readonly calendarLabel = input('Calendar');
+  readonly previousMonthLabel = input('Previous month');
+  readonly nextMonthLabel = input('Next month');
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly readonly = input(false, { transform: booleanAttribute });
   readonly required = input(false, { transform: booleanAttribute });

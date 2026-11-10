@@ -43,26 +43,44 @@ export function detectConflicts({ shift, employee, shifts, absences }: ConflictI
     }
   }
 
-  // 2. Approved or pending absence covering that date.
+  // An overnight shift (end at or before start) runs into the next calendar day.
+  const overnight = toMinutes(shift.end) <= toMinutes(shift.start);
+  const nextDate = addDays(shift.date, 1);
+
+  // 2. Approved or pending absence covering the start day, or the next day for an overnight shift.
   const absence = absences.find(
     (a) =>
       a.employeeId === shift.employeeId &&
       a.status !== 'rejected' &&
-      a.startDate <= shift.date &&
+      a.startDate <= (overnight ? nextDate : shift.date) &&
       a.endDate >= shift.date,
   );
   if (absence) result.push({ type: 'absence', messageKey: 'absence', relatedId: absence.id });
 
-  // 3. Outside the weekday availability window.
+  // 3. Outside the weekday availability window. An overnight shift needs the start day to be
+  //    available from the start until midnight, and the next day from midnight until the end.
   const availability = employee.availability[weekdayIndex(shift.date)];
   if (!availability) {
     result.push({ type: 'unavailable', messageKey: 'unavailableDay' });
-  } else if (
-    toMinutes(shift.start) < toMinutes(availability.from) ||
-    toMinutes(shift.end) > toMinutes(availability.to) ||
-    toMinutes(shift.end) <= toMinutes(shift.start)
-  ) {
-    result.push({ type: 'unavailable', messageKey: 'unavailableHours' });
+  } else if (!overnight) {
+    if (
+      toMinutes(shift.start) < toMinutes(availability.from) ||
+      toMinutes(shift.end) > toMinutes(availability.to)
+    ) {
+      result.push({ type: 'unavailable', messageKey: 'unavailableHours' });
+    }
+  } else {
+    const next = employee.availability[weekdayIndex(nextDate)];
+    if (!next) {
+      result.push({ type: 'unavailable', messageKey: 'unavailableDay' });
+    } else if (
+      toMinutes(shift.start) < toMinutes(availability.from) ||
+      toMinutes(availability.to) < 1440 ||
+      toMinutes(next.from) > 0 ||
+      toMinutes(shift.end) > toMinutes(next.to)
+    ) {
+      result.push({ type: 'unavailable', messageKey: 'unavailableHours' });
+    }
   }
 
   // 4. Weekly hours above the contract.

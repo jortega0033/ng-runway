@@ -22,6 +22,8 @@
     "today": "Vandaag",
     "previous": "Vorige",
     "next": "Volgende",
+    "previousMonth": "Vorige maand",
+    "nextMonth": "Volgende maand",
     "approve": "Goedkeuren",
     "reject": "Afwijzen",
     "comment": "Opmerking",
@@ -76,7 +78,14 @@
     "notifications": "Meldingen",
     "commandPalette": "Zoeken en opdrachten",
     "devToolbar": "Dev-werkbalk",
-    "demoBadge": "Demodata"
+    "demoBadge": "Demodata",
+    "dismissNotification": "Melding sluiten"
+  },
+  "titles": {
+    "login": "Inloggen",
+    "employeeNew": "Nieuwe medewerker",
+    "employeeProfile": "Medewerker",
+    "employeeEdit": "Medewerker bewerken"
   },
   "login": {
     "title": "Inloggen bij ng-runway",

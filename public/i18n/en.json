@@ -22,6 +22,8 @@
     "today": "Today",
     "previous": "Previous",
     "next": "Next",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
     "approve": "Approve",
     "reject": "Reject",
     "comment": "Comment",
@@ -76,7 +78,14 @@
     "notifications": "Notifications",
     "commandPalette": "Search and commands",
     "devToolbar": "Dev toolbar",
-    "demoBadge": "Demo data"
+    "demoBadge": "Demo data",
+    "dismissNotification": "Dismiss notification"
+  },
+  "titles": {
+    "login": "Sign in",
+    "employeeNew": "New employee",
+    "employeeProfile": "Employee",
+    "employeeEdit": "Edit employee"
   },
   "login": {
     "title": "Sign in to ng-runway",

@@ -2,7 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   booleanAttribute,
+  ElementRef,
   computed,
+  inject,
   input,
 } from '@angular/core';
 import { IconComponent, type IconName } from '../icon/icon';
@@ -32,13 +34,14 @@ const VARIANTS: Record<ButtonVariant, string> = {
   host: {
     '[class]': 'classes()',
     '[attr.aria-label]': 'label()',
-    '[attr.disabled]': 'blocked() ? "" : null',
+    '[attr.disabled]': 'disabled() ? "" : null',
+    '[attr.aria-disabled]': 'loading() && !disabled() ? "true" : null',
     '[attr.aria-busy]': 'loading() ? "true" : null',
   },
   imports: [IconComponent, SpinnerComponent],
   template: `
     @if (loading()) {
-      <ui-spinner size="xs" color="current" label="Loading" />
+      <span aria-hidden="true" class="inline-flex"><ui-spinner size="xs" color="current" /></span>
     } @else {
       <ui-icon [name]="icon()" [size]="size() === 'sm' ? 16 : 20" />
     }
@@ -52,7 +55,20 @@ export class IconButtonComponent {
   readonly loading = input(false, { transform: booleanAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
 
-  protected readonly blocked = computed(() => this.disabled() || this.loading());
+  constructor() {
+    // Capture phase on the host runs before the consumer's (click) listener, so a click made
+    // while loading never reaches it. (The button is not `disabled`, to keep keyboard focus.)
+    inject<ElementRef<HTMLElement>>(ElementRef).nativeElement.addEventListener(
+      'click',
+      (event) => {
+        if (!this.loading()) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      },
+      { capture: true },
+    );
+  }
+
   protected readonly classes = computed(
     () => `${BASE} ${VARIANTS[this.variant()]} ${this.size() === 'sm' ? 'size-8' : 'size-9'}`,
   );

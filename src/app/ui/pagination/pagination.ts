@@ -27,7 +27,7 @@ const NAV_BUTTON =
   'inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-base text-foreground ' +
   'outline-offset-2 transition-colors hover:bg-background-hover active:bg-background-press ' +
   'focus-visible:outline-2 focus-visible:outline-border-brand ' +
-  'disabled:cursor-not-allowed disabled:text-foreground-disabled disabled:hover:bg-transparent';
+  'aria-disabled:cursor-not-allowed aria-disabled:text-foreground-disabled aria-disabled:hover:bg-transparent';
 
 /**
  * Page controls for server-side or client-side lists. It only edits `page` and `pageSize`;
@@ -59,7 +59,7 @@ const NAV_BUTTON =
             <button
               type="button"
               [class]="navButton"
-              [disabled]="current() <= 1"
+              [attr.aria-disabled]="current() <= 1 ? 'true' : null"
               [attr.aria-label]="previousLabel()"
               (click)="go(current() - 1)"
             >
@@ -95,7 +95,7 @@ const NAV_BUTTON =
             <button
               type="button"
               [class]="navButton"
-              [disabled]="current() >= count()"
+              [attr.aria-disabled]="current() >= count() ? 'true' : null"
               [attr.aria-label]="nextLabel()"
               (click)="go(current() + 1)"
             >
@@ -121,6 +121,10 @@ export class PaginationComponent {
   readonly nextLabel = input('Next page');
   readonly pageSizeLabel = input('Rows per page');
   readonly pageLabel = input<(page: number) => string>((page) => `Page ${page}`);
+  /** Range text, e.g. "1-20 of 143". Callers pass a translated function. `start` and `end` are 0 when empty. */
+  readonly summaryLabel = input<(range: { start: number; end: number; total: number }) => string>(
+    ({ start, end, total }) => (total <= 0 ? '0 of 0' : `${start}-${end} of ${total}`),
+  );
 
   protected readonly sizeId = `ui-pagination-size-${PaginationComponent.nextId++}`;
   protected readonly navButton = NAV_BUTTON;
@@ -132,13 +136,14 @@ export class PaginationComponent {
   protected readonly items = computed(() => pageItems(this.current(), this.count()));
   protected readonly summary = computed(() => {
     const total = this.total();
-    if (total <= 0) return '0 of 0';
+    if (total <= 0) return this.summaryLabel()({ start: 0, end: 0, total: 0 });
     const start = (this.current() - 1) * this.pageSize() + 1;
     const end = Math.min(start + this.pageSize() - 1, total);
-    return `${start}-${end} of ${total}`;
+    return this.summaryLabel()({ start, end, total });
   });
 
   protected go(page: number): void {
+    // Prev/next use aria-disabled (stay focusable), so out-of-range clicks land here and are clamped.
     const next = Math.min(Math.max(page, 1), this.count());
     if (next !== this.page()) this.page.set(next);
   }

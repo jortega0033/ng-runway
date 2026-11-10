@@ -76,7 +76,10 @@ export interface ScheduleState {
   lookupsLoaded: boolean;
   loadingLookups: boolean;
   loadingWeek: boolean;
-  error: boolean;
+  /** The lookups (people, teams, templates) failed to load. */
+  lookupsError: boolean;
+  /** The shifts of the week failed to load. */
+  weekError: boolean;
   /** Bumped by `retry()` so the week is fetched again with the same filters. */
   reloadToken: number;
   savingIds: string[];
@@ -103,7 +106,8 @@ function initialState(today: string): ScheduleState {
     lookupsLoaded: false,
     loadingLookups: false,
     loadingWeek: false,
-    error: false,
+    lookupsError: false,
+    weekError: false,
     reloadToken: 0,
     savingIds: [],
     publishing: false,
@@ -149,7 +153,21 @@ export const ScheduleStore = signalStore(
     );
     const employeesById = computed(() => new Map(store.employees().map((e) => [e.id, e])));
     const teamsById = computed(() => new Map(store.teams().map((t) => [t.id, t])));
-    const shifts = computed(() => store.entities());
+    const weekEnd = computed(() => addDays(store.weekStart(), 6));
+    /** Shifts of the loaded week only: entities of other weeks (edited away, in flight) never count. */
+    const shifts = computed(() => {
+      const from = store.weekStart();
+      const to = weekEnd();
+      return store.entities().filter((s) => s.date >= from && s.date <= to);
+    });
+    /** The loaded week within the team and location filter: what the counts and Publish refer to. */
+    const scopedShifts = computed(() =>
+      shifts().filter(
+        (s) =>
+          (!store.teamId() || s.teamId === store.teamId()) &&
+          (!store.locationId() || s.locationId === store.locationId()),
+      ),
+    );
     const shiftsByEmployee = computed(() => groupShiftsByEmployee(shifts()));
 
     /** Conflicts per shift id (only shifts that have some). One pass per employee, not per cell. */
@@ -193,17 +211,19 @@ export const ScheduleStore = signalStore(
       employeesById,
       teamsById,
       shifts,
+      scopedShifts,
       shiftsByEmployee,
       conflictsByShift,
       grid,
-      openShifts: computed(() => shifts().filter((s) => s.employeeId === null)),
-      draftCount: computed(() => shifts().filter((s) => s.status === 'draft').length),
-      publishedCount: computed(() => shifts().filter((s) => s.status === 'published').length),
+      openShifts: computed(() => scopedShifts().filter((s) => s.employeeId === null)),
+      draftCount: computed(() => scopedShifts().filter((s) => s.status === 'draft').length),
+      publishedCount: computed(() => scopedShifts().filter((s) => s.status === 'published').length),
+      error: computed(() => store.lookupsError() || store.weekError()),
       loading: computed(() => store.loadingLookups() || store.loadingWeek()),
       weekRange: computed(() => weekRange(store.weekStart())),
       query: computed<WeekQuery>(() => ({
         from: store.weekStart(),
-        to: addDays(store.weekStart(), 6),
+        to: weekEnd(),
         teamId: store.teamId(),
         locationId: store.locationId(),
         token: store.reloadToken(),
@@ -217,7 +237,9 @@ export const ScheduleStore = signalStore(
   withComputed((store) => ({
     /** Drafts waiting to be published in the loaded week. */
     unpublishedCount: computed(() => store.draftCount()),
-    isEmpty: computed(() => !store.loading() && !store.error() && store.shifts().length === 0),
+    isEmpty: computed(
+      () => !store.loading() && !store.error() && store.scopedShifts().length === 0,
+    ),
   })),
 
   withMethods((store) => {
@@ -261,6 +283,10 @@ export const ScheduleStore = signalStore(
       announce(t(`schedule.toast.undone.${kind}`));
     };
 
+    /** Is this date inside the week on screen? Results for other weeks are not merged. */
+    const inLoadedWeek = (date: string) =>
+      date >= store.weekStart() && date <= addDays(store.weekStart(), 6);
+
     const scope = () => ({
       teamId: store.teamId() || undefined,
       locationId: store.locationId() || undefined,
@@ -270,7 +296,7 @@ export const ScheduleStore = signalStore(
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     const loadLookups = rxMethod<void>(
       pipe(
-        tap(() => patchState(store, { loadingLookups: true, error: false })),
+        tap(() => patchState(store, { loadingLookups: true, lookupsError: false })),
         switchMap(() =>
           forkJoin({
             employees: employeesApi.list({ pageSize: 100, sort: 'name', dir: 'asc' }),
@@ -291,7 +317,7 @@ export const ScheduleStore = signalStore(
               }),
             ),
             catchError(() => {
-              patchState(store, { loadingLookups: false, error: true });
+              patchState(store, { loadingLookups: false, lookupsError: true });
               return EMPTY;
             }),
           ),
@@ -306,7 +332,8 @@ export const ScheduleStore = signalStore(
       markSaving(tempId, true);
       try {
         const saved = await firstValueFrom(shiftsApi.create(input));
-        patchState(store, removeEntity(tempId), addEntity(saved));
+        patchState(store, removeEntity(tempId));
+        if (inLoadedWeek(saved.date)) patchState(store, addEntity(saved));
         announce(
           t('schedule.announce.created', {
             who: personName(saved.employeeId),
@@ -338,7 +365,7 @@ export const ScheduleStore = signalStore(
       patchState(store, updateEntity({ id, changes: input }));
       try {
         const saved = await firstValueFrom(shiftsApi.update(id, input));
-        patchState(store, setEntity(saved));
+        patchState(store, inLoadedWeek(saved.date) ? setEntity(saved) : removeEntity(id));
         announce(
           kind === 'resize'
             ? t('schedule.announce.resized', { end: saved.end })
@@ -400,7 +427,7 @@ export const ScheduleStore = signalStore(
       loadLookups,
       loadWeek: rxMethod<WeekQuery>(
         pipe(
-          tap(() => patchState(store, { loadingWeek: true, error: false })),
+          tap(() => patchState(store, { loadingWeek: true, weekError: false })),
           switchMap((q) =>
             forkJoin({
               shifts: shiftsApi.list({
@@ -418,7 +445,7 @@ export const ScheduleStore = signalStore(
                 }),
               ),
               catchError(() => {
-                patchState(store, { loadingWeek: false, error: true });
+                patchState(store, { loadingWeek: false, weekError: true });
                 return EMPTY;
               }),
             ),
@@ -483,13 +510,19 @@ export const ScheduleStore = signalStore(
       async publishWeek(): Promise<number | null> {
         if (!store.canEdit() || store.publishing()) return null;
         const { from, to } = store.weekRange();
+        const { teamId, locationId } = scope();
         patchState(store, { publishing: true });
         try {
           const result = await firstValueFrom(shiftsApi.publish({ from, to, ...scope() }));
           patchState(
             store,
             updateEntities({
-              predicate: (s) => s.status === 'draft',
+              predicate: (s) =>
+                s.status === 'draft' &&
+                s.date >= from &&
+                s.date <= to &&
+                (!teamId || s.teamId === teamId) &&
+                (!locationId || s.locationId === locationId),
               changes: { status: 'published' },
             }),
             { publishing: false },
@@ -514,7 +547,9 @@ export const ScheduleStore = signalStore(
               ...scope(),
             }),
           );
-          patchState(store, addEntities(copies), { copying: false });
+          patchState(store, addEntities(copies.filter((c) => inLoadedWeek(c.date))), {
+            copying: false,
+          });
           announce(t('schedule.announce.copied', { count: copies.length }));
           return copies.length;
         } catch {

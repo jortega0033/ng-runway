@@ -310,7 +310,7 @@ function isShift(data: Shift | ShiftTemplate): data is Shift {
                             <span class="truncate">{{ absenceText(absence) }}</span>
                           </div>
                         }
-                        @for (shift of cell.shifts; track shift) {
+                        @for (shift of cell.shifts; track shift.id) {
                           <div
                             cdkDrag
                             [cdkDragData]="shift"
@@ -362,11 +362,12 @@ function isShift(data: Shift | ShiftTemplate): data is Shift {
                                 }
                               </span>
                             </button>
-                            @if (canResize(shift)) {
+                            @if (showResize(shift)) {
                               <span
                                 role="slider"
                                 tabindex="0"
-                                class="absolute inset-y-0 right-0 flex w-2.5 cursor-ew-resize items-center justify-center rounded-r-md bg-background-alt-contrast outline-offset-2 hover:bg-background-press focus-visible:outline-2 focus-visible:outline-border-brand"
+                                class="group/resize absolute inset-y-0 right-0 flex w-6 cursor-ew-resize justify-end rounded-r-md outline-offset-2 focus-visible:outline-2 focus-visible:outline-border-brand aria-disabled:cursor-progress aria-disabled:opacity-60"
+                                [attr.aria-disabled]="canResize(shift) ? null : 'true'"
                                 [attr.aria-label]="
                                   'schedule.shift.resizeHandle'
                                     | transloco: { name: chipName(shift) }
@@ -383,7 +384,12 @@ function isShift(data: Shift | ShiftTemplate): data is Shift {
                                 (pointerup)="endResize()"
                                 (pointercancel)="cancelResize()"
                                 (keydown)="resizeKey($event, shift)"
-                              ></span>
+                              >
+                                <span
+                                  class="h-full w-2.5 rounded-r-md bg-background-alt-contrast group-hover/resize:bg-background-press"
+                                  aria-hidden="true"
+                                ></span>
+                              </span>
                             }
                             <div
                               *cdkDragPlaceholder
@@ -424,7 +430,7 @@ function isShift(data: Shift | ShiftTemplate): data is Shift {
                               <span class="truncate">{{ absenceText(absence) }}</span>
                             </div>
                           }
-                          @for (shift of cell.shifts; track shift) {
+                          @for (shift of cell.shifts; track shift.id) {
                             <div
                               cdkDrag
                               [cdkDragData]="shift"
@@ -703,8 +709,13 @@ export class ScheduleGridComponent {
     return this.canEdit() && !this.isSaving(shift);
   }
 
+  /** The handle stays in the DOM while a save runs (so focus is not lost), but is disabled. */
+  protected showResize(shift: Shift): boolean {
+    return this.canEdit() && !isOvernight(shift);
+  }
+
   protected canResize(shift: Shift): boolean {
-    return this.canMove(shift) && !isOvernight(shift);
+    return this.showResize(shift) && !this.isSaving(shift);
   }
 
   // ---- day view geometry ----
@@ -721,6 +732,8 @@ export class ScheduleGridComponent {
 
   // ---- opening the editor ----
   protected open(shift: Shift): void {
+    // A shift that is still being created has no real id yet; the editor would update nothing.
+    if (shift.id.startsWith('tmp-')) return;
     // A click right after a drag ends is the end of the drag, not a request to edit.
     if (performance.now() - this.lastDragEnd < 250) return;
     this.editShift.emit(shift);
@@ -782,6 +795,7 @@ export class ScheduleGridComponent {
 
   // ---- resizing the end of a shift ----
   protected startResize(event: PointerEvent, shift: Shift): void {
+    if (!this.canResize(shift)) return;
     event.preventDefault();
     event.stopPropagation();
     (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
@@ -810,16 +824,25 @@ export class ScheduleGridComponent {
     this.resizing.set(null);
   }
 
-  /** Arrow keys change the end by 15 minutes, the same step as dragging. */
+  /**
+   * Arrow keys change the end by 15 minutes, the same step as dragging. Page up and down move by an
+   * hour, Home gives the shortest shift and End runs to midnight.
+   */
   protected resizeKey(event: KeyboardEvent, shift: Shift): void {
-    const step =
-      event.key === 'ArrowRight' || event.key === 'ArrowUp'
-        ? 15
-        : event.key === 'ArrowLeft' || event.key === 'ArrowDown'
-          ? -15
-          : 0;
+    const steps: Record<string, number> = {
+      ArrowRight: 15,
+      ArrowUp: 15,
+      ArrowLeft: -15,
+      ArrowDown: -15,
+      PageUp: 60,
+      PageDown: -60,
+      End: 1440,
+      Home: -1440,
+    };
+    const step = steps[event.key] ?? 0;
     if (step === 0) return;
     event.preventDefault();
+    if (!this.canResize(shift)) return;
     void this.store.resizeShift(shift.id, resizeEnd(shift, step));
   }
 }

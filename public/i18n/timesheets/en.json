@@ -59,6 +59,7 @@
     "allStatuses": "All statuses",
     "allWeeks": "All weeks",
     "approveSelected": "Approve selected ({{ count }})",
+    "remaining": "Entries waiting for review: {{ count }}",
     "tableLabel": "Time entries to review",
     "emptyTitle": "Nothing to review",
     "emptyText": "No time entries match these filters. Submitted hours appear here as soon as employees clock out.",

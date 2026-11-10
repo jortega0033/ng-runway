@@ -53,6 +53,27 @@ describe('date picker', () => {
     expect(input.value).toBe('2026-11-09');
   });
 
+  it('closes when focus moves outside the field and the calendar (Tab out)', async () => {
+    const { fixture, toggle, input } = await setup();
+    const outside = document.createElement('button');
+    document.body.append(outside);
+    toggle.click();
+    await fixture.whenStable();
+    expect(grid()).not.toBeNull();
+
+    // Focus inside the calendar moving to a day in the same pane keeps it open...
+    active()?.dispatchEvent(
+      new FocusEvent('focusout', { bubbles: true, relatedTarget: grid()!.querySelector('button') }),
+    );
+    expect(grid()).not.toBeNull();
+    // ...but leaving to somewhere else closes it.
+    active()?.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: outside }));
+    await fixture.whenStable();
+    expect(grid()).toBeNull();
+    expect(input.getAttribute('aria-expanded')).toBe('false');
+    outside.remove();
+  });
+
   it('opens a labelled grid with the selected day focused and today marked', async () => {
     const { fixture, toggle, input } = await setup();
     toggle.click();

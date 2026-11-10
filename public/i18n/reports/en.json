@@ -28,6 +28,7 @@
   "laborCost": "Labor cost",
   "laborCostEur": "Labor cost (EUR)",
   "total": "Total",
+  "chartSummary": "{{ label }}. {{ series }} series, {{ categories }} categories. Data table follows.",
   "hoursByTeam": "Worked and scheduled hours per team",
   "dailyHours": "Worked hours per day",
   "dailyNote": "All teams together. The team filter does not apply to this chart.",

@@ -21,6 +21,10 @@ export interface DialogConfig<D = unknown> {
   readonly disableClose?: boolean;
   /** `end` is the drawer layout: a full-height panel on the right. */
   readonly placement?: 'center' | 'end';
+  /** `alertdialog` for questions that need an answer before anything else (used by `confirm`). */
+  readonly role?: 'dialog' | 'alertdialog';
+  /** Id of the element that describes the dialog (read after the title). */
+  readonly ariaDescribedBy?: string;
 }
 
 export interface ConfirmOptions {
@@ -32,9 +36,14 @@ export interface ConfirmOptions {
   readonly danger?: boolean;
 }
 
+interface ConfirmData extends ConfirmOptions {
+  readonly messageId: string;
+}
+
 const WIDTHS: Record<DialogSize, string> = { sm: '24rem', md: '32rem', lg: '44rem' };
 
 let nextTitleId = 0;
+let nextMessageId = 0;
 
 /**
  * Opens components or templates in a modal. Built on the CDK Dialog, which provides the focus
@@ -64,6 +73,8 @@ export class DialogService {
       autoFocus: 'first-tabbable',
       restoreFocus: true,
       ariaModal: true,
+      role: config.role ?? 'dialog',
+      ariaDescribedBy: config.ariaDescribedBy ?? null,
       ariaLabel: config.ariaLabel ?? null,
       ariaLabelledBy: config.ariaLabel ? null : titleId,
       providers: () => [{ provide: OVERLAY_TITLE_ID, useValue: titleId }],
@@ -73,9 +84,12 @@ export class DialogService {
 
   /** Asks a yes/no question. Resolves `true` only when the user confirms; Escape resolves `false`. */
   async confirm(options: ConfirmOptions): Promise<boolean> {
-    const ref = this.open<boolean, ConfirmOptions, ConfirmDialogComponent>(ConfirmDialogComponent, {
+    const messageId = `ui-confirm-message-${nextMessageId++}`;
+    const ref = this.open<boolean, ConfirmData, ConfirmDialogComponent>(ConfirmDialogComponent, {
       size: 'sm',
-      data: options,
+      data: { ...options, messageId },
+      role: 'alertdialog',
+      ariaDescribedBy: messageId,
     });
     return (await firstValueFrom(ref.closed, { defaultValue: false })) === true;
   }
@@ -88,7 +102,7 @@ export class DialogService {
   imports: [DialogComponent, ButtonComponent],
   template: `
     <ui-dialog [title]="options.title" [closable]="false">
-      {{ options.message }}
+      <p [id]="options.messageId">{{ options.message }}</p>
       <ng-container uiDialogFooter>
         <button ui-button type="button" variant="secondary" (click)="ref.close(false)">
           {{ options.cancelLabel ?? 'Cancel' }}
@@ -106,6 +120,6 @@ export class DialogService {
   `,
 })
 export class ConfirmDialogComponent {
-  protected readonly options = inject<ConfirmOptions>(DIALOG_DATA);
+  protected readonly options = inject<ConfirmData>(DIALOG_DATA);
   protected readonly ref = inject<DialogRef<boolean>>(DialogRef);
 }

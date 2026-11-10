@@ -1,5 +1,5 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import {
   ButtonComponent,
@@ -59,6 +59,7 @@ export class ReviewCommentDialog {
   protected readonly data = inject<ReviewDialogData>(DIALOG_DATA);
   protected readonly ref = inject<DialogRef<ReviewDialogResult>>(DialogRef);
 
+  private readonly textarea = viewChild(TextareaComponent);
   protected readonly comment = signal('');
   protected readonly error = signal('');
 
@@ -71,6 +72,7 @@ export class ReviewCommentDialog {
     const comment = this.comment().trim();
     if (this.data.requiredError && !comment) {
       this.error.set(this.data.requiredError);
+      this.textarea()?.focus();
       return;
     }
     this.ref.close({ comment });

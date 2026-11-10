@@ -2,6 +2,9 @@ import type { TemplateRef } from '@angular/core';
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
   computed,
   inject,
   linkedSignal,
@@ -97,6 +100,9 @@ const WEEKS_BACK = 8;
       </div>
     </div>
 
+    <!-- Live region: tells screen reader users how much work is left after a review. -->
+    <p role="status" class="sr-only">{{ announcement() }}</p>
+
     @if (entries.error()) {
       <ui-card>
         <ui-empty-state
@@ -110,20 +116,22 @@ const WEEKS_BACK = 8;
         </ui-empty-state>
       </ui-card>
     } @else {
-      <ui-table
-        [label]="'timesheets.approvals.tableLabel' | transloco"
-        [columns]="columns()"
-        [rows]="rows()"
-        [trackBy]="byId"
-        [loading]="entries.isLoading()"
-        [emptyTitle]="'timesheets.approvals.emptyTitle' | transloco"
-        [emptyMessage]="'timesheets.approvals.emptyText' | transloco"
-        emptyIcon="check-circle"
-        selectable
-        [(selected)]="selected"
-        [selectAllLabel]="'timesheets.approvals.selectAll' | transloco"
-        [rowSelectLabel]="selectLabel"
-      />
+      <div #tableWrap tabindex="-1" class="outline-none">
+        <ui-table
+          [label]="'timesheets.approvals.tableLabel' | transloco"
+          [columns]="columns()"
+          [rows]="rows()"
+          [trackBy]="byId"
+          [loading]="entries.isLoading()"
+          [emptyTitle]="'timesheets.approvals.emptyTitle' | transloco"
+          [emptyMessage]="'timesheets.approvals.emptyText' | transloco"
+          emptyIcon="check-circle"
+          selectable
+          [(selected)]="selected"
+          [selectAllLabel]="'timesheets.approvals.selectAll' | transloco"
+          [rowSelectLabel]="selectLabel"
+        />
+      </div>
     }
 
     <ng-template #cell let-row let-column="column">
@@ -153,6 +161,7 @@ const WEEKS_BACK = 8;
                 type="button"
                 size="sm"
                 variant="secondary"
+                [attr.data-entry-id]="row.id"
                 [attr.aria-label]="actionLabel('approve', row)"
                 (click)="approve(row)"
               >
@@ -163,6 +172,7 @@ const WEEKS_BACK = 8;
                 type="button"
                 size="sm"
                 variant="secondary"
+                [attr.data-entry-id]="row.id"
                 [attr.aria-label]="actionLabel('reject', row)"
                 (click)="reject(row)"
               >
@@ -188,7 +198,10 @@ export class TimesheetApprovalsComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService);
 
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
   private readonly cell = viewChild.required<TemplateRef<TableCellContext<ClockEntry>>>('cell');
+  private readonly tableWrap = viewChild<ElementRef<HTMLElement>>('tableWrap');
 
   /** Admins see every team, managers only their own. */
   protected readonly isAdmin = this.auth.role() === 'admin';
@@ -196,7 +209,15 @@ export class TimesheetApprovalsComponent {
   protected readonly status = signal<StatusFilter>('submitted');
   /** Monday of the chosen week, or an empty string for all weeks. */
   protected readonly week = signal('');
-  protected readonly selected = signal<ClockEntry[]>([]);
+  /** Cleared whenever a filter changes, so a bulk action never reaches rows that left the list. */
+  protected readonly selected = linkedSignal<ClockEntry[]>(() => {
+    this.teamId();
+    this.status();
+    this.week();
+    return [];
+  });
+  /** Text of the live region, set after each review. */
+  protected readonly announcement = signal('');
 
   private readonly locale = computed(() => this.language.language());
   /** Emits when the scope file is loaded and on language changes, so code-built text stays current. */
@@ -283,10 +304,11 @@ export class TimesheetApprovalsComponent {
     ];
   });
 
-  /** Only submitted rows can be approved in bulk. */
-  protected readonly approvableSelection = computed(() =>
-    this.selected().filter((e) => e.status === 'submitted'),
-  );
+  /** Only selected rows that are still on screen and submitted can be approved in bulk. */
+  protected readonly approvableSelection = computed(() => {
+    const ids = new Set(this.selected().map((e) => e.id));
+    return this.rows().filter((e) => ids.has(e.id) && e.status === 'submitted');
+  });
 
   protected readonly byId = (entry: ClockEntry) => entry.id;
   protected readonly selectLabel = (entry: ClockEntry) =>
@@ -369,6 +391,38 @@ export class TimesheetApprovalsComponent {
     if (targets.length > 0) this.review(targets, 'approved', '');
   }
 
+  /** The filters as they are now: used to decide whether a failed review's row belongs back. */
+  private matchesFilters(entry: ClockEntry): boolean {
+    const status = this.status();
+    if (status && entry.status !== status) return false;
+    const week = this.week();
+    if (week && (entry.date < week || entry.date > addDays(week, 6))) return false;
+    const team = this.teamId();
+    if (team) {
+      const employee = this.employees.value()?.items.find((e) => e.id === entry.employeeId);
+      if (employee?.teamId !== team) return false;
+    }
+    return true;
+  }
+
+  /** Focus the next row that still has review buttons, else the table. */
+  private focusAfterReview(index: number): void {
+    const wrap = this.tableWrap()?.nativeElement;
+    if (!wrap) return;
+    const rows = this.rows();
+    for (const entry of [...rows.slice(index), ...rows.slice(0, index).reverse()]) {
+      if (entry.status !== 'submitted') continue;
+      const button = wrap.querySelector<HTMLElement>(
+        `button[data-entry-id="${CSS.escape(entry.id)}"]`,
+      );
+      if (button) {
+        button.focus();
+        return;
+      }
+    }
+    wrap.focus();
+  }
+
   /**
    * Updates the list right away, then sends the reviews. Entries the server refuses go back
    * to the list where they were; the error toast comes from the interceptor.
@@ -376,8 +430,24 @@ export class TimesheetApprovalsComponent {
   private review(targets: ClockEntry[], status: 'approved' | 'rejected', comment: string): void {
     const ids = new Set(targets.map((e) => e.id));
     const before = this.rows();
+    // Focus is lost when the reviewed row (or the bulk button) stops being actionable; move it on.
+    const active = document.activeElement;
+    const hadFocus =
+      !(active instanceof HTMLElement) ||
+      active === document.body ||
+      this.host.nativeElement.contains(active);
+    const index = Math.max(
+      0,
+      Math.min(...targets.map((t) => before.findIndex((e) => e.id === t.id))),
+    );
     this.rows.set(applyReview(before, ids, status, comment, this.status()));
     this.selected.update((current) => current.filter((e) => !ids.has(e.id)));
+    this.announcement.set(
+      this.t('timesheets.approvals.remaining', {
+        count: this.rows().filter((e) => e.status === 'submitted').length,
+      }),
+    );
+    if (hadFocus) afterNextRender(() => this.focusAfterReview(index), { injector: this.injector });
 
     forkJoin(
       targets.map((target) =>
@@ -388,7 +458,11 @@ export class TimesheetApprovalsComponent {
       ),
     ).subscribe((results) => {
       const failed = new Set(results.filter((r) => r.saved === null).map((r) => r.id));
-      if (failed.size > 0) this.rows.update((current) => restoreEntries(current, before, failed));
+      if (failed.size > 0) {
+        this.rows.update((current) =>
+          restoreEntries(current, before, failed, (e) => this.matchesFilters(e)),
+        );
+      }
       const done = results.length - failed.size;
       if (done > 0) {
         this.toasts.show({

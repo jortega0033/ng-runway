@@ -2,10 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  type ElementRef,
+  Injector,
+  afterNextRender,
   computed,
   inject,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -89,6 +93,7 @@ type ClockAction = 'in' | 'out' | 'start-break' | 'end-break';
         </div>
 
         <div
+          #actions
           class="flex flex-wrap gap-2"
           role="group"
           [attr.aria-label]="'timesheets.clock.actions' | transloco"
@@ -96,7 +101,7 @@ type ClockAction = 'in' | 'out' | 'start-break' | 'end-break';
           <button
             ui-button
             type="button"
-            [disabled]="!canRun('in')"
+            [disabled]="isDisabled('in')"
             [loading]="pending() === 'in'"
             (click)="run('in')"
           >
@@ -106,7 +111,7 @@ type ClockAction = 'in' | 'out' | 'start-break' | 'end-break';
             ui-button
             type="button"
             variant="secondary"
-            [disabled]="!canRun('start-break')"
+            [disabled]="isDisabled('start-break')"
             [loading]="pending() === 'start-break'"
             (click)="run('start-break')"
           >
@@ -116,7 +121,7 @@ type ClockAction = 'in' | 'out' | 'start-break' | 'end-break';
             ui-button
             type="button"
             variant="secondary"
-            [disabled]="!canRun('end-break')"
+            [disabled]="isDisabled('end-break')"
             [loading]="pending() === 'end-break'"
             (click)="run('end-break')"
           >
@@ -126,7 +131,7 @@ type ClockAction = 'in' | 'out' | 'start-break' | 'end-break';
             ui-button
             type="button"
             variant="danger"
-            [disabled]="!canRun('out')"
+            [disabled]="isDisabled('out')"
             [loading]="pending() === 'out'"
             (click)="run('out')"
           >
@@ -142,6 +147,8 @@ export class ClockWidgetComponent {
   private readonly auth = inject(AuthService);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
+  private readonly injector = inject(Injector);
+  private readonly actions = viewChild<ElementRef<HTMLElement>>('actions');
 
   /** Emitted after every successful clock action, so the week view can reload. */
   readonly changed = output();
@@ -197,8 +204,23 @@ export class ClockWidgetComponent {
     inject(DestroyRef).onDestroy(() => this.stopTimer());
   }
 
+  /**
+   * The running action keeps its button enabled (it shows a spinner through `loading`), so keyboard
+   * focus stays on it; the other buttons are blocked until the request is done.
+   */
+  protected isDisabled(action: ClockAction): boolean {
+    if (this.current.isLoading() || this.current.error()) return true;
+    if (this.pending() !== null && this.pending() !== action) return true;
+    return !this.allowed(action);
+  }
+
   protected canRun(action: ClockAction): boolean {
-    if (this.current.isLoading() || this.current.error() || this.pending() !== null) return false;
+    return this.pending() === null && !this.current.isLoading() && !this.current.error()
+      ? this.allowed(action)
+      : false;
+  }
+
+  private allowed(action: ClockAction): boolean {
     const status = this.status();
     switch (action) {
       case 'in':
@@ -219,13 +241,24 @@ export class ClockWidgetComponent {
       .pipe(finalize(() => this.pending.set(null)))
       .subscribe({
         next: (entry) => {
+          const group = this.actions()?.nativeElement;
+          const active = document.activeElement;
+          const hadFocus = !!group && (group.contains(active) || active === document.body);
           this.setEntry(entry.clockOut === null ? entry : null);
+          // The button that was just used is disabled now; hand focus to the next action.
+          if (hadFocus) afterNextRender(() => this.focusNextAction(), { injector: this.injector });
           this.announce(action, entry);
           this.changed.emit();
         },
         // The error toast comes from the interceptor. Reload so the buttons match the server.
         error: () => this.current.reload(),
       });
+  }
+
+  private focusNextAction(): void {
+    this.actions()
+      ?.nativeElement.querySelector<HTMLButtonElement>('button:not([disabled])')
+      ?.focus();
   }
 
   private request(action: ClockAction): Observable<ClockEntry> {

@@ -122,7 +122,10 @@ describe('dialog', () => {
 
     const yes = host.ask();
     await fixture.whenStable();
-    const buttons = [...document.querySelectorAll<HTMLButtonElement>('[role="dialog"] button')];
+    const alert = document.querySelector('[role="alertdialog"]')!;
+    const message = document.getElementById(alert.getAttribute('aria-describedby')!)!;
+    expect(message.textContent).toBe('This cannot be undone.');
+    const buttons = [...alert.querySelectorAll<HTMLButtonElement>('button')];
     expect(buttons.map((b) => b.textContent?.trim())).toEqual(['Cancel', 'Delete']);
     buttons[1].click();
     await yes;

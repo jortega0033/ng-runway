@@ -84,6 +84,7 @@
     }
   },
   "requests": {
+    "remaining": "Requests waiting for review: {{ count }}",
     "tableLabel": "Pending absence requests",
     "emptyTitle": "No requests to review",
     "emptyText": "New requests from your team show up here.",

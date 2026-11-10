@@ -2,11 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   booleanAttribute,
+  inject,
   input,
   model,
   output,
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
+import { FIELD_CONTEXT } from '../field/field';
 import type { SelectOption } from '../select/select';
 
 let nextGroup = 0;
@@ -18,7 +20,11 @@ let nextGroup = 0;
   host: {
     role: 'radiogroup',
     class: 'inline-flex rounded-md border border-border bg-background-muted p-0.5',
+    '[attr.id]': 'field?.controlId() ?? null',
     '[attr.aria-label]': 'label() || null',
+    '[attr.aria-labelledby]': 'field?.labelId ?? null',
+    '[attr.aria-describedby]': 'field?.describedBy() ?? null',
+    '[attr.aria-invalid]': 'field?.invalid() ? "true" : null',
   },
   template: `
     @for (option of options(); track option.value) {
@@ -41,6 +47,7 @@ let nextGroup = 0;
   `,
 })
 export class SegmentedComponent implements FormValueControl<string> {
+  protected readonly field = inject(FIELD_CONTEXT, { optional: true });
   protected readonly groupName = `ui-segmented-${nextGroup++}`;
 
   readonly value = model('');

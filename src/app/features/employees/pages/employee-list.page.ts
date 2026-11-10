@@ -211,6 +211,7 @@ function asRole(value: string): UserRole | '' {
             [nextLabel]="'employees.list.pagination.next' | transloco"
             [pageSizeLabel]="'employees.list.pagination.pageSize' | transloco"
             [pageLabel]="pageLabel"
+            [summaryLabel]="summaryLabel"
             (pageChange)="setPage($event)"
             (pageSizeChange)="setPageSize($event)"
           />
@@ -348,6 +349,17 @@ export class EmployeeListPage {
   protected readonly byId = (row: Employee): string => row.id;
   protected readonly pageLabel = (page: number): string =>
     this.t('employees.list.pagination.page', { page });
+  protected readonly summaryLabel = (range: {
+    start: number;
+    end: number;
+    total: number;
+  }): string =>
+    this.t(
+      range.total <= 0
+        ? 'employees.list.pagination.summaryEmpty'
+        : 'employees.list.pagination.summary',
+      range,
+    );
 
   constructor() {
     const initial = this.state().q;

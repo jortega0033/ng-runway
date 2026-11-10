@@ -14,10 +14,10 @@ test('a manager copies a week as drafts and publishes it', async ({ page }) => {
   // The current week is fully published, so there is nothing to publish yet.
   await expect(page.getByRole('button', { name: 'Publish week, 0 drafts' })).toBeDisabled();
 
-  // Next week is empty: copy this week into it as drafts.
-  await page.getByRole('button', { name: 'Next week' }).click();
+  // The seed ends on 7 Dec, so the week after it is empty: copy the last seeded week into it.
+  for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Next week' }).click();
   await page.getByRole('button', { name: 'Copy previous week' }).click();
-  const copy = page.getByRole('dialog', { name: 'Copy the previous week?' });
+  const copy = page.getByRole('alertdialog', { name: 'Copy the previous week?' });
   await copy.getByRole('button', { name: 'Copy shifts' }).click();
   await expect(page.getByText('Previous week copied')).toBeVisible();
 
@@ -26,7 +26,7 @@ test('a manager copies a week as drafts and publishes it', async ({ page }) => {
   await expect(page.getByRole('button', { name: /, draft(,|$)/ }).first()).toBeVisible();
 
   await publish.click();
-  const confirm = page.getByRole('dialog', { name: 'Publish this week?' });
+  const confirm = page.getByRole('alertdialog', { name: 'Publish this week?' });
   await confirm.getByRole('button', { name: 'Publish', exact: true }).click();
 
   await expect(page.getByText('Week published')).toBeVisible();

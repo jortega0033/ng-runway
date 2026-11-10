@@ -223,6 +223,8 @@ describe('request flow', () => {
       expect(dialog.textContent).toContain('Choose a start date.');
       expect(dialog.textContent).toContain('Choose an end date.');
     });
+    // The first invalid control gets focus so the error is announced where the user is.
+    await vi.waitFor(() => expect(document.activeElement).toBe(fieldControl(dialog, 'Start date')));
 
     typeDate(fieldControl(dialog, 'Start date'), addDays(MONDAY, 7));
     typeDate(fieldControl(dialog, 'End date'), MONDAY);
@@ -311,6 +313,11 @@ describe('approvals', () => {
     buttonByName(dialog, 'Approve')?.click();
 
     await vi.waitFor(() => expect(root.textContent).not.toContain('Wedding'));
+    expect(root.querySelector('[role=status]')?.textContent).toContain(
+      'Requests waiting for review: 0',
+    );
+    // No row is left, so focus lands on the table instead of being lost.
+    await vi.waitFor(() => expect(root.contains(document.activeElement)).toBe(true));
     await vi.waitFor(() =>
       expect(api.db.state.absences.find((a) => a.id === 'abs-review')).toMatchObject({
         status: 'approved',

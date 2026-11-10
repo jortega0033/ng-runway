@@ -232,7 +232,6 @@ export function nextSort(current: TableSort | null, key: string): TableSort | nu
         [style.grid-template-columns]="template()"
         [style.height.px]="rowHeight()"
         [attr.aria-rowindex]="i + 2"
-        [attr.aria-selected]="selectable() ? isSelected(row) : null"
         [attr.tabindex]="rowsClickable() ? 0 : null"
         (click)="onRowClick(row, $event)"
         (keydown)="onRowKeydown(row, $event)"

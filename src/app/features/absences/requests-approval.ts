@@ -2,11 +2,15 @@ import type { TemplateRef } from '@angular/core';
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
   computed,
   inject,
   input,
   linkedSignal,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
@@ -45,6 +49,9 @@ import { formatDateRange } from './absence-format';
     TranslocoPipe,
   ],
   template: `
+    <!-- Live region: tells screen reader users how many requests are left after a review. -->
+    <p role="status" class="sr-only">{{ announcement() }}</p>
+
     @if (pending.error()) {
       <ui-card>
         <ui-empty-state
@@ -58,16 +65,18 @@ import { formatDateRange } from './absence-format';
         </ui-empty-state>
       </ui-card>
     } @else {
-      <ui-table
-        [label]="'absences.requests.tableLabel' | transloco"
-        [columns]="columns()"
-        [rows]="rows()"
-        [trackBy]="byId"
-        [loading]="pending.isLoading()"
-        [emptyTitle]="'absences.requests.emptyTitle' | transloco"
-        [emptyMessage]="'absences.requests.emptyText' | transloco"
-        emptyIcon="check-circle"
-      />
+      <div #tableWrap tabindex="-1" class="outline-none">
+        <ui-table
+          [label]="'absences.requests.tableLabel' | transloco"
+          [columns]="columns()"
+          [rows]="rows()"
+          [trackBy]="byId"
+          [loading]="pending.isLoading()"
+          [emptyTitle]="'absences.requests.emptyTitle' | transloco"
+          [emptyMessage]="'absences.requests.emptyText' | transloco"
+          emptyIcon="check-circle"
+        />
+      </div>
     }
 
     <ng-template #cell let-row let-column="column">
@@ -91,6 +100,7 @@ import { formatDateRange } from './absence-format';
               type="button"
               size="sm"
               variant="secondary"
+              [attr.data-request-id]="row.id"
               [attr.aria-label]="actionLabel('approve', row)"
               (click)="approve(row)"
             >
@@ -101,6 +111,7 @@ import { formatDateRange } from './absence-format';
               type="button"
               size="sm"
               variant="secondary"
+              [attr.data-request-id]="row.id"
               [attr.aria-label]="actionLabel('reject', row)"
               (click)="reject(row)"
             >
@@ -129,7 +140,12 @@ export class AbsenceRequestsComponent {
   /** Emitted after a review was saved, so balances and calendars elsewhere can reload. */
   readonly reviewed = output();
 
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
   private readonly cell = viewChild.required<TemplateRef<TableCellContext<AbsenceRequest>>>('cell');
+  private readonly tableWrap = viewChild<ElementRef<HTMLElement>>('tableWrap');
+  /** Text of the live region, set after each review. */
+  protected readonly announcement = signal('');
   private readonly locale = computed(() => this.language.language());
   /** Emits when the scope file is loaded and on language changes, so code-built text stays current. */
   private readonly scopeLoaded = toSignal(this.transloco.selectTranslation('absences'));
@@ -251,7 +267,19 @@ export class AbsenceRequestsComponent {
   /** Takes the row off the list right away; it returns if the server refuses the review. */
   private review(request: AbsenceRequest, status: 'approved' | 'rejected', comment: string): void {
     const before = this.rows();
+    // The reviewed row (and its buttons) disappears, so focus has to move on by hand.
+    const active = document.activeElement;
+    const hadFocus =
+      !(active instanceof HTMLElement) ||
+      active === document.body ||
+      this.host.nativeElement.contains(active);
+    const index = Math.max(
+      0,
+      before.findIndex((r) => r.id === request.id),
+    );
     this.rows.set(before.filter((r) => r.id !== request.id));
+    this.announcement.set(this.t('absences.requests.remaining', { count: this.rows().length }));
+    if (hadFocus) afterNextRender(() => this.focusAfterReview(index), { injector: this.injector });
     this.api.review(request.id, status, comment).subscribe({
       next: () => {
         this.toasts.show({
@@ -268,6 +296,18 @@ export class AbsenceRequestsComponent {
       // The error toast comes from the interceptor.
       error: () => this.rows.update((current) => this.withRestored(current, before, request.id)),
     });
+  }
+
+  /** Focus the first action of the row that took the reviewed row's place, else the table. */
+  private focusAfterReview(index: number): void {
+    const wrap = this.tableWrap()?.nativeElement;
+    if (!wrap) return;
+    const rows = this.rows();
+    const next = rows[index] ?? rows[index - 1];
+    const button = next
+      ? wrap.querySelector<HTMLElement>(`button[data-request-id="${CSS.escape(next.id)}"]`)
+      : null;
+    (button ?? wrap).focus();
   }
 
   private withRestored(

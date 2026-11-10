@@ -84,6 +84,7 @@
     }
   },
   "requests": {
+    "remaining": "Nog te beoordelen aanvragen: {{ count }}",
     "tableLabel": "Openstaande verlofaanvragen",
     "emptyTitle": "Geen aanvragen om te beoordelen",
     "emptyText": "Nieuwe aanvragen van je team verschijnen hier.",

@@ -12,8 +12,24 @@ export interface ChartSeries {
 
 export type ChartValueFormatter = (value: number) => string;
 
-export const DEFAULT_FORMATTER: ChartValueFormatter = (value) =>
-  new Intl.NumberFormat('en', { maximumFractionDigits: 2 }).format(value);
+/** Formats numbers for a locale ('en', 'nl', ...). Used when a chart gets no `format` input. */
+export function numberFormatter(locale: string): ChartValueFormatter {
+  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
+  return (value) => formatter.format(value);
+}
+
+export const DEFAULT_FORMATTER: ChartValueFormatter = numberFormatter('en');
+
+/** What the chart sentence is built from. Callers pass a translated function. */
+export interface ChartSummaryInfo {
+  readonly label: string;
+  readonly series: number;
+  readonly categories: number;
+}
+export type ChartSummaryFn = (info: ChartSummaryInfo) => string;
+
+export const DEFAULT_SUMMARY: ChartSummaryFn = ({ label, series, categories }) =>
+  `${label}. ${series} series, ${categories} categories. Data table follows.`;
 
 /** Fixed drawing space. The svg scales to its container width through the viewBox. */
 export const CHART_WIDTH = 640;

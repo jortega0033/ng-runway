@@ -28,6 +28,7 @@
   "laborCost": "Loonkosten",
   "laborCostEur": "Loonkosten (EUR)",
   "total": "Totaal",
+  "chartSummary": "{{ label }}. {{ series }} reeksen, {{ categories }} categorieën. Datatabel volgt.",
   "hoursByTeam": "Gewerkte en geplande uren per team",
   "dailyHours": "Gewerkte uren per dag",
   "dailyNote": "Alle teams samen. Het teamfilter geldt niet voor deze grafiek.",

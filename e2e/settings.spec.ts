@@ -43,7 +43,7 @@ test('an admin resets the demo data and lands on the login page', async ({ page 
   await signIn(page, 'admin');
   await page.goto('/settings');
   await page.getByRole('button', { name: 'Reset demo data' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Reset demo data?' });
+  const dialog = page.getByRole('alertdialog', { name: 'Reset demo data?' });
   await dialog.getByRole('button', { name: 'Cancel' }).click();
   await expect(dialog).toHaveCount(0);
   await expect(page).toHaveURL(/\/settings/);

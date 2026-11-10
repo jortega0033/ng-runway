@@ -1,5 +1,14 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import {
   FormField,
@@ -82,6 +91,8 @@ interface RequestModel {
               [formField]="f.startDate"
               [buttonLabel]="'absences.request.chooseDate' | transloco"
               [calendarLabel]="'absences.request.calendar' | transloco"
+              [previousMonthLabel]="'common.previousMonth' | transloco"
+              [nextMonthLabel]="'common.nextMonth' | transloco"
             />
           </ui-field>
           <ui-field
@@ -93,6 +104,8 @@ interface RequestModel {
               [formField]="f.endDate"
               [buttonLabel]="'absences.request.chooseDate' | transloco"
               [calendarLabel]="'absences.request.calendar' | transloco"
+              [previousMonthLabel]="'common.previousMonth' | transloco"
+              [nextMonthLabel]="'common.nextMonth' | transloco"
             />
           </ui-field>
         </div>
@@ -153,6 +166,8 @@ export class AbsenceRequestDialog {
   protected readonly ref = inject<DialogRef<AbsenceRequest>>(DialogRef);
   private readonly api = inject(AbsencesApi);
   private readonly toasts = inject(ToastService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
   private readonly transloco = inject(TranslocoService);
 
   private readonly scopeLoaded = toSignal(this.transloco.selectTranslation('absences'));
@@ -214,6 +229,11 @@ export class AbsenceRequestDialog {
   protected async onSubmit(event?: Event): Promise<void> {
     event?.preventDefault();
     if (this.saving()) return;
+    // A failed submit marks every field as touched; once the errors render, focus the first one.
+    afterNextRender(
+      () => this.host.nativeElement.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus(),
+      { injector: this.injector },
+    );
     await submit(this.f, async () => {
       this.saving.set(true);
       try {

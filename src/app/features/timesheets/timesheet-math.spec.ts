@@ -3,6 +3,7 @@ import {
   applyReview,
   breakMinutes,
   buildWeek,
+  cappedNow,
   clockStatus,
   formatClock,
   formatSignedDuration,
@@ -178,5 +179,34 @@ describe('restoreEntries', () => {
     const restored = restoreEntries(optimistic, before, new Set(['a']));
     expect(restored.map((e) => e.id)).toEqual(['a', 'c']);
     expect(restored[0]?.status).toBe('submitted');
+  });
+
+  it('does not bring back a failed row that the current filter excludes', () => {
+    const before = [entry({ id: 'a' }), entry({ id: 'b' })];
+    const optimistic = applyReview(before, new Set(['a']), 'approved', '', 'submitted');
+    const restored = restoreEntries(optimistic, before, new Set(['a']), (e) => e.id !== 'a');
+    expect(restored.map((e) => e.id)).toEqual(['b']);
+  });
+});
+
+describe('open entries from earlier days', () => {
+  const open = entry({ id: 'open', date: '2026-11-09', clockOut: null, breaks: [] });
+
+  it('stop counting at the end of their own day', () => {
+    const now = new Date('2026-11-12T10:00:00');
+    const capped = cappedNow(open, now);
+    expect(capped.getTime()).toBe(new Date('2026-11-10T00:00:00').getTime());
+    const week = buildWeek(WEEK, [], [open], 40, now);
+    const day = week.days.find((d) => d.date === '2026-11-09');
+    // 08:00Z clock-in against local midnight: far less than the three days since.
+    expect(day?.workedMinutes).toBeLessThan(24 * 60);
+  });
+
+  it('keep counting up to now on the same day, and leave closed entries alone', () => {
+    const now = new Date('2026-11-09T23:00:00');
+    expect(cappedNow(open, now)).toBe(now);
+    expect(cappedNow(entry(), new Date('2026-12-01T00:00:00'))).toEqual(
+      new Date('2026-12-01T00:00:00'),
+    );
   });
 });
