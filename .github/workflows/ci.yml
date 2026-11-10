@@ -31,7 +31,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test -- --watch=false
       - run: npm run build
-      - run: node --test "cli/**/*.test.mjs"
+      - run: npm run cli:test
 
   e2e:
     name: End-to-end and accessibility

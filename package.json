@@ -21,7 +21,7 @@
     "docs:components": "node scripts/build-components-doc.mjs",
     "gen:feature": "node scripts/gen-feature.mjs",
     "strip": "node scripts/strip.mjs",
-    "verify": "npm run tokens:check && npm run lint && npm run format:check && npm run typecheck && npm test -- --watch=false && npm run build && npm run e2e"
+    "verify": "npm run tokens:check && npm run cli:test && npm run lint && npm run format:check && npm run typecheck && npm test -- --watch=false && npm run build && npm run e2e"
   },
   "private": true,
   "packageManager": "npm@10.9.9",

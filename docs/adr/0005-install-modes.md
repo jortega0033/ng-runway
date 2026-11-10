@@ -27,12 +27,12 @@ A plain Node CLI in `cli/` exposed through `bin`, used as `npx github:jortega003
 ## Consequences
 
 - The CLI uses only Node built-ins and is tested on Windows, macOS and Linux.
-- Files copied by `ui` must stay self-contained; a lint rule keeps `ui/` from importing feature code.
+- Files copied by `ui` must stay self-contained; an ESLint `no-restricted-imports` rule keeps `ui/` from importing feature code (`@core` and `@tokens` are allowed).
 - `strip` and `gen:feature` are repo scripts and are not part of the CLI.
 
 ## Assumptions and not verified
 
-- `npx github:` runs a `bin` entry from a repo with a large `devDependencies` list without installing it. To verify in M6.
+- `npx github:` runs a `bin` entry from a repo with a large `devDependencies` list without installing it. Measured: it works with a devDependencies-only package and installs no dependencies into the npx cache (only ng-runway itself). The first run took about 2 minutes (git fetch); a cached run took 17 seconds.
 
 ## Revisit when
 
@@ -40,8 +40,8 @@ The project is published to npm, or `npx github:` becomes slow because of repo s
 
 ## Critic reconciliation
 
-- Core mechanism: whether `npx github:` installs only runtime dependencies (devDependencies are not installed for a git dependency without a `prepare` script) must be measured, not assumed. The measurement runs as soon as the repo is public (end of M0) with a stub `bin`, and the timing is recorded here.
+- Core mechanism: whether `npx github:` installs only runtime dependencies (devDependencies are not installed for a git dependency without a `prepare` script) was measured, not assumed; the result is recorded under assumptions above.
 - Documented commands pin a tag: `npx github:jortega0033/ng-runway#v1.0.0 <mode>`. The unpinned form follows the default branch and is documented as such.
-- `"private": true` must not block this; checked in the same measurement.
-- File selection is manifest-driven (`cli/manifest.json`) with a test that fails when files listed there are missing.
+- `"private": true` must not block this; checked in the same measurement and does not block it.
+- File selection is manifest-driven (`cli/manifest.mjs`) with a test that fails when files listed there are missing.
 - Overwrite policy: `tokens` and `ui` refuse to overwrite existing files unless `--force` is passed; `create` refuses a non-empty target directory. `create` runs `npm ci --ignore-scripts` unless `--no-install` is given, and reports git or install failures without leaving a half-renamed project.

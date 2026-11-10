@@ -27,7 +27,7 @@ Build the components in `src/app/ui/` from `@angular/aria` (accessible interacti
 
 ## Assumptions and not verified
 
-- `@angular/aria` covers combobox, listbox, tabs, menu and similar patterns well enough. Where it does not, the CDK or a small custom directive fills the gap (checked per component in M1).
+- `@angular/aria` covers combobox, listbox, tabs, menu and similar patterns well enough. Where it does not, the CDK or a small custom directive fills the gap (checked per component while building the library).
 
 ## Revisit when
 
@@ -35,7 +35,7 @@ The component count or maintenance load makes a kit cheaper than the library.
 
 ## Critic reconciliation
 
-Component inventory. This is the plan for M1; the gaps are known now and none blocks the decision.
+Component inventory. The library in `src/app/ui/` followed this plan; no gap blocked the decision.
 
 | Needs                                                                                                                                    | Built on                                                                            |
 | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
@@ -49,4 +49,4 @@ Component inventory. This is the plan for M1; the gaps are known now and none bl
 - Accessibility cost is accepted. Axe in both themes is a baseline; complex widgets also get keyboard tests and a short manual checklist in `docs/components.md`.
 - If a widget cannot be built on Aria or the CDK in reasonable time, a headless fallback or a simpler native element is allowed. It must still use semantic tokens.
 - The "do not invent components" rule applies to feature code: features reuse `ui/` components. Adding a component to `ui/` is allowed with a `/design-system` entry and a `docs/components.md` entry.
-- Revisit threshold: if more than 3 widgets need non-trivial custom accessibility work after M1, reconsider a headless library.
+- Revisit threshold: if more than 3 widgets need non-trivial custom accessibility work after the library was built, reconsider a headless library.

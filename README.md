@@ -62,6 +62,7 @@ npm run gen:feature orders    # scaffold model, mock API, service, list/detail/f
 | `npm test -- --watch=false`                    | Unit and component tests (Vitest)                            |
 | `npm run e2e`                                  | Playwright flows per role plus axe checks (needs a build)    |
 | `npm run lint` / `format:check` / `typecheck`  | Quality gates                                                |
+| `npm run cli:test`                             | Tests for the installer CLI and scripts                      |
 | `npm run verify`                               | Everything above, in CI order                                |
 | `npm run strip` / `npm run gen:feature <name>` | Remove the demo / scaffold a feature                         |
 | `npm run docs:components`                      | Rebuild docs/components.md from docs/components/\*.md        |

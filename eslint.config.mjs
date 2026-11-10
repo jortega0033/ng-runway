@@ -72,6 +72,21 @@ export default tseslint.config(
     rules: { '@angular-eslint/template/elements-content': 'off' },
   },
   {
+    // ui/ must stay copyable on its own (see ADR 0005): no feature imports.
+    files: ['src/app/ui/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['@features/*'], message: 'ui/ must not import feature code.' },
+            { group: ['**/features/*'], message: 'ui/ must not import feature code.' },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.spec.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',

@@ -24,12 +24,12 @@ Use Mock Service Worker (MSW) in the browser. Handlers sit on an in-memory datab
 
 - Positive: the app code is production-shaped; the same handlers can serve Vitest and Playwright.
 - Negative: the worker must start before the first request, and the Pages deploy needs the worker URL to respect the base href.
-- A dev toolbar (dev builds only) can inject latency, random errors and empty responses at the handler layer.
+- A dev toolbar (shown in dev builds, or in any build when `localStorage['ng-runway.devtools']` is `1`) can inject latency, random errors and empty responses at the handler layer.
 - Reset demo data clears the persisted database and reseeds it.
 
 ## Assumptions and not verified
 
-- MSW works with the Angular application builder's asset pipeline and a non-root base href. To verify in M2.
+- MSW works with the Angular application builder's asset pipeline and a non-root base href. Verified: the demo runs from the GitHub Pages subpath.
 
 ## Revisit when
 
@@ -37,10 +37,10 @@ A real backend exists and the mock layer becomes a maintenance cost rather than 
 
 ## Critic reconciliation
 
-- Service worker scope and base href: accepted risk. Mitigation: the app bootstraps after `worker.start()` resolves (app initializer), and if registration fails it logs a warning and continues. The Pages subpath is checked early in M2.1 and again after deploy in M7.
+- Service worker scope and base href: accepted risk. Mitigation: `src/main.ts` awaits `startMockApi()` (a dynamic import) before `bootstrapApplication`, and if registration fails it logs a warning and continues. `provideAppInitializer` only preloads the language. The Pages subpath was checked after deploy.
 - Faker bundle size and drift: accepted. Seeding runs lazily, only when the persisted database is missing, and tests assert on structure and counts rather than faker-generated values. Fixed seed plus pinned version keeps data stable.
 - Storage schema: accepted. The persisted database has a `schemaVersion`. A mismatch, a corrupt value or a full quota triggers a reseed with a toast.
 - Contract drift: accepted. API request and response types live in one shared `models` file used by handlers and services, so the compiler enforces the contract. No OpenAPI is generated.
-- `mockServiceWorker.js` drift: accepted. A unit test compares its embedded version with the installed `msw` version.
+- `mockServiceWorker.js` drift: accepted. `src/app/core/mock/worker-version.spec.ts` compares its embedded version with the installed `msw` version.
 - Unit and component tests reuse the handlers through `msw/node`.
 - Interceptor-based fakes: rejected. A worker shows the real network path, which is the lesson the demo teaches.

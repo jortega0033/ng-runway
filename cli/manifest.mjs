@@ -80,7 +80,6 @@ export const CREATE_OPTIONAL = [
   '.postcssrc.json',
   '.husky',
   'commitlint.config.mjs',
-  'playwright.config.ts',
   'AGENTS.md',
   'llms.txt',
   '.mcp.json',

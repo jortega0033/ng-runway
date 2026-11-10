@@ -8,7 +8,7 @@ Angular 22 admin dashboard boilerplate (workforce management). UI only, mocked A
 - `npm test -- --watch=false` (Vitest through the Angular builder), `npm run lint`, `npm run format:check`, `npm run typecheck`.
 - `npm run tokens:build` regenerates `tokens/tailwind-theme.css` and `tokens/tokens.ts`; `npm run tokens:check` must pass.
 - `npm run hooks:install` sets up Husky (lint-staged, commitlint). Use conventional commits.
-- CLI tests: `node --test "cli/**/*.test.mjs"`.
+- CLI tests: `npm run cli:test`.
 
 ## Structure
 
