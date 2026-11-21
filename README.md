@@ -4,7 +4,7 @@ Angular 22 admin dashboard boilerplate for workforce management. UI only, with a
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/jortega0033/ng-runway)
 
-**Demo:** https://jortega0033.github.io/ng-runway/ (sign in with one click as Admin, Manager or Employee; data lives in your browser).
+**Demo.** [Open the GitHub Pages demo](https://jortega0033.github.io/ng-runway/). Choose Admin, Manager or Employee to explore synthetic workforce data. MSW handles API requests in the browser and saves demo state locally.
 
 |                           Light                           |                          Dark                           |
 | :-------------------------------------------------------: | :-----------------------------------------------------: |
@@ -24,7 +24,22 @@ More: timesheets, employees and the design-system page are in [docs/screenshots]
 
 ## Stack and conventions
 
-Standalone components, zoneless, signals, `inject()`, new control flow. Tailwind v4 with semantic tokens only, no UI kit (Angular Aria and CDK underneath). Signal Forms (plus one Reactive Forms example). Signal services for state, NgRx SignalStore for the schedule only. MSW mocks the API, and the app uses real `HttpClient` calls, so a real backend is a base URL change ([docs/adapting.md](docs/adapting.md)). Decisions are in [docs/adr](docs/adr).
+Standalone components, zoneless, signals, `inject()`, new control flow. Tailwind v4 with semantic tokens only, no UI kit (Angular Aria and CDK underneath). Signal Forms (plus one Reactive Forms example). Signal services for state, NgRx SignalStore for the schedule only. MSW mocks the API, and the app uses real `HttpClient` calls. Decisions are in [docs/adr](docs/adr).
+
+### Connecting a backend
+
+The current entry point starts MSW before Angular boots. A backend integration needs an explicit startup mode, a matching `API_BASE_URL` and implementations for the endpoints the chosen screens use. The [MSW handlers](src/app/core/mock/handlers.ts) show the current contract. The demo role picker uses synthetic roles.
+
+## Proposed offline timesheet workflow
+
+The proposed local mode would run the Angular app and a SQLite API on loopback alongside the existing static demo:
+
+1. Stage a Linux build with the locked dependencies, local Chrome and system font fallbacks.
+2. Persist a fictional employee's clock, breaks and timesheet submission.
+3. Let a manager approve or reject submitted entries with a version check and an audit history.
+4. Export approved entries to CSV. Verify exact minutes against the dashboard after restarting the app.
+
+The acceptance run uses a synthetic roster and checks simultaneous manager decisions and the exported totals with external network requests blocked. See the [release acceptance issue](https://github.com/jortega0033/ng-runway/issues/6). The current demo uses MSW and browser storage.
 
 ## Three ways to use it
 
@@ -68,7 +83,7 @@ npm run gen:feature orders    # scaffold model, mock API, service, list/detail/f
 | `npm run docs:components`                      | Rebuild docs/components.md from docs/components/\*.md        |
 | `npm run hooks:install`                        | Husky with lint-staged and commitlint (conventional commits) |
 
-Node 22 (see `.nvmrc`). Works on Windows, macOS and Linux. A devcontainer is included.
+Use Node.js 22.22.3 or later in the 22.x release line with npm 10. The locked Angular build tooling sets that minimum for Node 22. CI selects the Node 22 release line from `.nvmrc`. A devcontainer is available for development outside the browser workspace.
 
 ## Folder structure
 
