@@ -31,6 +31,12 @@ Angular 22 admin dashboard boilerplate (workforce management). UI only, mocked A
 - Font files in the repo. Editing values in `tokens/tokens.css` or `tokens/tokens.json`.
 - `dependencies` entries (everything is a devDependency), and `prepare` or `postinstall` scripts.
 
+## Before you start
+
+- Requirements live in the GitHub issues and their epic. Architecture, one traced workflow and the roadmap status are in [docs/architecture.md](docs/architecture.md).
+- `v1.0.0` is tagged: work on a branch and open a small pull request ([CONTRIBUTING.md](CONTRIBUTING.md)). Do not commit to `main`.
+- Project agent roles and the report-only triage loop are described in [docs/agents-and-loop.md](docs/agents-and-loop.md) and [LOOP.md](LOOP.md). The loop never edits source, labels, pushes or merges.
+
 ## Before you finish
 
-Run `npm run lint`, `npm run typecheck`, `npm test -- --watch=false` and `npm run build`. Report what you ran and what you did not.
+Run `npm run lint`, `npm run typecheck`, `npm test -- --watch=false` and `npm run build`. Report what you ran and what you did not. For a ticket, show the evidence for each acceptance criterion and the commit it belongs to.

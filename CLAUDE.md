@@ -37,3 +37,37 @@ Angular 22 admin dashboard boilerplate (workforce management). UI only, mocked A
 ## Skill routing (angular-engineer plugin)
 
 Vague or large ticket: `angular-refine`. Before merge or on review comments: `angular-review`. New to the repo: `angular-onboard`. Sizing a change or PR: `angular-small-pr`. Building or fixing a feature: `angular-engineer`.
+
+## Sources of truth
+
+- Requirements: the GitHub issues of `jortega0033/ng-runway` and the epic that groups them. There is no PRD file. Read the issue before the code.
+- Architecture, the traced clock-to-report workflow, the invariants and the roadmap status: [docs/architecture.md](docs/architecture.md). Update it in the same pull request when a change makes a statement there untrue.
+- Decisions: [docs/adr](docs/adr). A new runtime, storage or startup mode needs an ADR before code.
+- Contract between app and API: `src/app/core/api/models.ts` and `src/app/core/mock/handlers.ts`.
+
+## Boundaries
+
+- `ui/` never imports `features/` (ESLint enforces it). `core/` does not import `features/`, with one designed exception: `core/mock/features.ts`, where the generator registers the mock of a generated feature. Features do not import each other.
+- Screens reach data only through `src/app/core/api/*.api.ts` and `API_BASE_URL`. No `fetch`, no direct `localStorage` access for API data.
+- Rules about hours, dates, conflicts and balances are pure functions in `src/app/core/domain/`. Call them from components and handlers instead of writing them again. A second implementation, for example in a server process, needs an ADR and tests that hold the two equal.
+- The mock demo (MSW, GitHub Pages) must keep working when another mode is added. The repository has no API server and does not use SQLite today; `scripts/serve-dist.mjs` only serves the built files.
+
+## Git workflow
+
+- `v1.0.0` is tagged, so every change goes through a small pull request ([CONTRIBUTING.md](CONTRIBUTING.md)). Do not commit to `main`.
+- Work on a branch, in your own worktree when another checkout has local changes. Leave other people's uncommitted files alone.
+- Conventional commits, header at most 100 characters. A merge to `main` deploys the demo to GitHub Pages.
+- One issue per pull request where possible; name the issue in the description.
+
+## Evidence before calling a ticket done
+
+- The commands you ran and their real results. `npm run verify` runs, in order: `tokens:check`, `cli:test`, `lint`, `format:check`, `typecheck`, `test -- --watch=false`, `build`, `e2e`. Say which steps you skipped and why.
+- For each acceptance criterion of the issue: the test, command output or screenshot that shows it. A criterion without evidence is not done.
+- For screen changes: both themes, EN and NL, keyboard use, and the axe run in `e2e/a11y.spec.ts`.
+- The commit SHA the evidence belongs to.
+
+## Agent roles and triage loop
+
+- Roles in `.claude/agents/` are pinned copies from Agency Agents; the review roles are read-only. The list, the pin and the license are in [docs/agents-and-loop.md](docs/agents-and-loop.md).
+- The issue-triage loop is L1 report-only and started by hand ([LOOP.md](LOOP.md)). Do not add a scheduler, automated fixes or auto-merge.
+- `.claude/skills/` is ignored except for the four loop skills. Keep other skills local.
