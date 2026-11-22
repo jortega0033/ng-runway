@@ -38,6 +38,8 @@ Angular 22 admin dashboard boilerplate (workforce management). UI only, mocked A
 
 Vague or large ticket: `angular-refine`. Before merge or on review comments: `angular-review`. New to the repo: `angular-onboard`. Sizing a change or PR: `angular-small-pr`. Building or fixing a feature: `angular-engineer`.
 
+These skills help the session with its own work. They do not replace the roles and the two gates in "Agent roles, ticket work and triage loop": `angular-review` is not the review gate.
+
 ## Sources of truth
 
 - Requirements: the GitHub issues of `jortega0033/ng-runway` and the epic that groups them. There is no PRD file. Read the issue before the code.
@@ -66,23 +68,14 @@ Vague or large ticket: `angular-refine`. Before merge or on review comments: `an
 - For screen changes: both themes, EN and NL, keyboard use, and the axe run in `e2e/a11y.spec.ts`.
 - The commit SHA the evidence belongs to.
 
-## Agent roles and triage loop
+## Agent roles, ticket work and triage loop
 
-- Roles in `.claude/agents/` are pinned copies from Agency Agents; the review roles are read-only. The list, the pin and the license are in [docs/agents-and-loop.md](docs/agents-and-loop.md).
-- The issue-triage loop is L1 report-only and started by hand ([LOOP.md](LOOP.md)). Do not add a scheduler, automated fixes or auto-merge.
-- `.claude/skills/` is ignored except for the four loop skills. Keep other skills local.
-
-## Ticket implementation: agent roles run automatically
-
-When asked to implement, continue or finish a GitHub issue, follow the playbook in [`.claude/skills/implement-ticket/SKILL.md`](.claude/skills/implement-ticket/SKILL.md). Claude Code loads it on its own for ticket work; `/implement-ticket <issue number>` starts it by hand.
-
-Delegate to the project subagents in `.claude/agents/` without waiting to be asked:
-
-- **Before coding:** Codebase Onboarding Engineer and Software Architect, as their descriptions say.
-- **While coding:** the implementing role that matches the files being changed.
-- **After coding:** each specialist reviewer whose trigger matches the change.
-- **On every ticket, before it is called done:** Code Reviewer, then Reality Checker.
-- The session that wrote a change does not count as its reviewer.
-- List the roles that ran and their verdicts in the pull request description under "Agent roles run".
-
-Each role's `description` ends with a "Use proactively ..." sentence, which is what makes Claude Code delegate to it without being told.
+- **Where the roles live.** Eight project subagents in `.claude/agents/`: pinned copies from Agency Agents with local changes. Each role file starts with an "In this repository" section written for this project (what the role owns here, its commands, its checklist, what to ignore in the generic text, what to hand back). That section and this file override the generic text below it. The list, the pin, the license and the local changes are in [docs/agents-and-loop.md](docs/agents-and-loop.md).
+- **Playbook.** When asked to implement, continue or finish a GitHub issue, follow [`.claude/skills/implement-ticket/SKILL.md`](.claude/skills/implement-ticket/SKILL.md). Claude Code loads it on its own for ticket work; `/implement-ticket <issue number>` starts it by hand. Delegate to the roles without waiting to be asked; the "Use proactively" sentence that ends each role `description` is what triggers the delegation.
+- **Before coding:** Codebase Onboarding Engineer for an unfamiliar area, and Software Architect when a boundary, data model, storage schema, public API or dependency changes. Both are read-only.
+- **While coding:** the implementing role that matches the files: Frontend Developer (browser-side code), Backend Architect (contract, mock API, domain rules, the planned local-mode server), Test Automation Engineer (tests and the Playwright harness).
+- **After coding:** Accessibility Auditor when user-facing UI, keyboard handling, focus order or markup changed.
+- **Gates on every ticket, whatever its size:** Code Reviewer on the full diff (review gate), then Reality Checker on the acceptance criteria and the evidence (acceptance gate). Both are read-only and cannot run commands: give them the diff, the criteria and the recorded command output. The session that wrote a change does not count as its reviewer.
+- **Pull request.** List each role that ran, what it was asked and its verdict under "Agent roles run", and any step done without a role.
+- **Triage loop.** The issue-triage loop is L1 report-only and started by hand ([LOOP.md](LOOP.md)). Do not add a scheduler, automated fixes or auto-merge.
+- **Skills in git.** The four loop skills and `implement-ticket` are tracked. Everything else in `.claude/skills/` is ignored; keep other skills local.

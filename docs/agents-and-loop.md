@@ -13,8 +13,8 @@ Source: [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agen
 | Codebase Onboarding Engineer | `engineering-codebase-onboarding-engineer.md` | `engineering/engineering-codebase-onboarding-engineer.md` | `Read, Grep, Glob` | Tracing a flow through the code with citations                        |
 | Reality Checker              | `testing-reality-checker.md`                  | `testing/testing-reality-checker.md`                      | `Read, Grep, Glob` | Checking that the recorded evidence supports "done"                   |
 | Frontend Developer           | `engineering-frontend-developer.md`           | `engineering/engineering-frontend-developer.md`           | inherited          | Angular work in `src/app/`                                            |
-| Backend Architect            | `engineering-backend-architect.md`            | `engineering/engineering-backend-architect.md`            | inherited          | The loopback API and SQLite schema of the planned local mode          |
-| Test Automation Engineer     | `testing-test-automation-engineer.md`         | `testing/testing-test-automation-engineer.md`             | inherited          | Playwright flows in `e2e/`                                            |
+| Backend Architect            | `engineering-backend-architect.md`            | `engineering/engineering-backend-architect.md`            | inherited          | The API contract, the mock API and the planned local-mode server      |
+| Test Automation Engineer     | `testing-test-automation-engineer.md`         | `testing/testing-test-automation-engineer.md`             | inherited          | Vitest specs, Playwright in `e2e/` and `node --test` files            |
 | Accessibility Auditor        | `testing-accessibility-auditor.md`            | `testing/testing-accessibility-auditor.md`                | inherited          | Accessibility checks; the axe gate is `e2e/a11y.spec.ts`              |
 
 Changes to the upstream files: the four review roles got one added frontmatter line, `tools: Read, Grep, Glob`, so they cannot edit files or run commands. Nothing else was changed. The other four files are byte-identical to the pin. Upstream definitions have no `tools` field, so those four inherit every tool of the session.
@@ -29,7 +29,7 @@ Claude Code identifies an agent by its `name`. A machine that has Agency Agents 
 
 ### Effect on the built stylesheet
 
-`src/styles.css` uses Tailwind's automatic source detection, which reads text files across the project folder, not only `src/`. It read the role files in a build made before they were committed. Two lines in them produce unused rules in the production CSS: `engineering-backend-architect.md:174` (`[users:read]`, emitted as a rule with the declaration `users: read`) and `engineering-frontend-developer.md:137` (`focus-visible:outline`). This was found by comparing the class selectors in a build made with these files against the text of the files on `main`; the comparison approximates Tailwind's matching, so there may be more. No element uses these classes, so nothing changes on screen, but the stylesheet that ships is not identical.
+`src/styles.css` uses Tailwind's automatic source detection, which reads text files across the project folder, not only `src/`. It read the role files in a build made before they were committed. Two lines in them produce unused rules in the production CSS: `engineering-backend-architect.md:197` (`[users:read]`, emitted as a rule with the declaration `users: read`) and `engineering-frontend-developer.md:159` (`focus-visible:outline`). This was found by comparing the class selectors in a build made with these files against the text of the files on `main`; the comparison approximates Tailwind's matching, so there may be more. No element uses these classes, so nothing changes on screen, but the stylesheet that ships is not identical.
 
 Excluding the folder from the scan is a change to app source (an exclusion such as Tailwind's `@source not` directive in `src/styles.css`) and was left for the owner to decide. It is not part of this setup and was not tested.
 
@@ -118,8 +118,27 @@ Then append an entry to `loop-run-log.md` and run `npx --yes @cobusgreyling/loop
 
 ## Local change: automatic delegation (2026-11-22)
 
-One sentence beginning "Use proactively" was appended to the `description:` line of every Agency Agents role in `.claude/agents/` (not to `loop-verifier`). Claude Code uses that field to decide when to delegate, so the roles now run during ticket work without being named. Nothing else in the role files changed.
+One sentence beginning "Use proactively" was appended to the `description:` line of every Agency Agents role in `.claude/agents/` (not to `loop-verifier`). Claude Code uses that field to decide when to delegate, so the roles now run during ticket work without being named. Nothing else in the role files changed in that step.
 
-This supersedes any statement above that a role file is unmodified or that the `tools:` line is the only local change. To compare a role with the pinned upstream file, remove that sentence (and the `tools:` line where one was added) first.
+This supersedes any statement above that a role file is unmodified or that the `tools:` line is the only local change.
 
 The steps at which each role runs are in `.claude/skills/implement-ticket/SKILL.md`.
+
+### Project section in every role
+
+A section headed "In this repository" was then inserted directly after the frontmatter of every Agency Agents role (not in `loop-verifier`). It is project-specific text written for this repository, not upstream text. It says what the role owns here, which commands from [CLAUDE.md](../CLAUDE.md) it runs (or, for the read-only roles, what the caller must hand over), which rules of this project it checks and where each is written down, which parts of the generic text do not apply, and what the role hands back. Each section ends with the sentence "This section and CLAUDE.md override the generic text below wherever they differ." This replaces the paragraph above that begins "The role texts are general".
+
+The frontmatter and the upstream text below the section were not touched: removing the section gives back the file of the previous commit byte for byte (checked for all eight files when the sections were inserted).
+
+To compare a role with the pinned upstream file, remove three things first: the "In this repository" section (from its heading up to the line before the role's first `# ` heading), the "Use proactively" sentence, and the `tools:` line where one was added.
+
+The sections describe the repository at the commit that added them: issues #1 to #9 open, no local mode in the code. They go stale the same way `docs/architecture.md` does, so correct a section in the pull request that makes one of its statements untrue.
+
+Two side effects:
+
+- The line numbers in "Effect on the built stylesheet" above were moved to match the longer files. No build was run for this change, so the sections were not compared with the built stylesheet. The plain words in them that are also Tailwind class names (`fixed`, `visible`, `blur`) already occur in other scanned files such as `AGENTS.md`.
+- `.claude/skills/implement-ticket/SKILL.md` is tracked from this commit on. The commit that wrote it did not include it, because `.gitignore` ignores `.claude/skills/*` apart from the four loop skills. It was added with `git add -f` and `.gitignore` was left as it is, so another new file in that folder stays ignored until it is added the same way or the owner adds an exception.
+
+### Verification
+
+2026-11-22, Claude Code 2.1.323, from the root of the worktree, with the sections in place and before the commit: one headless run, `claude -p "List every project subagent defined in .claude/agents with its exact name and tools, say for each whether its instructions begin with a section titled In this repository, and say whether a skill named implement-ticket is available. Plain list, no commentary." --model haiku`, exited 0. It listed the eight roles by their exact names, with `Read, Grep, Glob` for Code Reviewer, Codebase Onboarding Engineer, Software Architect and Reality Checker and no `tools` line for the other four, answered "yes" for the "In this repository" section on all eight and "no" for `loop-verifier`, and reported the `implement-ticket` skill as available and in its skill list. This is what one model run reported after looking at the folder; no role was started as a subagent in this check, and no ticket was run through the playbook.

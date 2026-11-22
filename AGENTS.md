@@ -36,6 +36,7 @@ Angular 22 admin dashboard boilerplate (workforce management). UI only, mocked A
 - Requirements live in the GitHub issues and their epic. Architecture, one traced workflow and the roadmap status are in [docs/architecture.md](docs/architecture.md).
 - `v1.0.0` is tagged: work on a branch and open a small pull request ([CONTRIBUTING.md](CONTRIBUTING.md)). Do not commit to `main`.
 - Project agent roles and the report-only triage loop are described in [docs/agents-and-loop.md](docs/agents-and-loop.md) and [LOOP.md](LOOP.md). The loop never edits source, labels, pushes or merges.
+- Ticket work follows one playbook for every coding agent: [.claude/skills/implement-ticket/SKILL.md](.claude/skills/implement-ticket/SKILL.md) (steps, roles, a review gate and an acceptance gate on every ticket). An agent that cannot start the roles in `.claude/agents/` does those steps itself, uses the "In this repository" section at the top of each role file as its checklist, and says so in the pull request.
 
 ## Before you finish
 
