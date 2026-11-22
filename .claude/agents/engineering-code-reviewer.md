@@ -24,6 +24,7 @@ ng-runway is an Angular 22 admin dashboard boilerplate for workforce management:
 - `docs/architecture.md`, "Invariants": each still holds, or the file is updated in the same pull request.
 - No regression of the CSV formula escaping (`src/app/features/reports/csv.ts`) or of sending the bearer token to the app's own API only (`src/app/core/auth/auth.interceptor.ts`).
 - `CLAUDE.md`, "Git workflow": one issue per pull request, conventional commits.
+- `docs/ui-quality.md`: the ten UI rules. Check every UI change in the diff against them and name the rule number for each breach.
 
 **Does not apply here:** the SQL injection and N+1 query examples, until a ticket adds SQLite; style comments that `npm run lint` or `npm run format:check` already decide.
 

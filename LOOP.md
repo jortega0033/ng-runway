@@ -17,6 +17,10 @@ Level: **L1 report-only**. A run reads the open issues and pull requests of `jor
 - No label, comment, close, push, pull request or merge from a loop run. Auto-merge stays off.
 - Raising the level (L2 label apply, fix-capable patterns) needs an explicit owner decision recorded in this file first.
 
+## Ticket work is not a loop run
+
+Implementing tickets is not a loop run. It is started by the owner with `/next-ticket` and governed by [CLAUDE.md](CLAUDE.md), the `implement-ticket` playbook, the review gate hook, CI and branch protection. The loop stays at L1: report-only and unscheduled.
+
 ## Human Gates
 
 - Priority assignment (P0, P1) — human only. A loop run may propose a priority in `issue-triage-state.md`; it never writes one to an issue

@@ -67,6 +67,7 @@ These skills help the session with its own work. They do not replace the roles a
 - For each acceptance criterion of the issue: the test, command output or screenshot that shows it. A criterion without evidence is not done.
 - For screen changes: both themes, EN and NL, keyboard use, and the axe run in `e2e/a11y.spec.ts`.
 - The commit SHA the evidence belongs to.
+- CI green on that commit (see "Delivery workflow").
 
 ## Agent roles, ticket work and triage loop
 
@@ -78,4 +79,18 @@ These skills help the session with its own work. They do not replace the roles a
 - **Gates on every ticket, whatever its size:** Code Reviewer on the full diff (review gate), then Reality Checker on the acceptance criteria and the evidence (acceptance gate). Both are read-only and cannot run commands: give them the diff, the criteria and the recorded command output. The session that wrote a change does not count as its reviewer.
 - **Pull request.** List each role that ran, what it was asked and its verdict under "Agent roles run", and any step done without a role.
 - **Triage loop.** The issue-triage loop is L1 report-only and started by hand ([LOOP.md](LOOP.md)). Do not add a scheduler, automated fixes or auto-merge.
-- **Skills in git.** The four loop skills and `implement-ticket` are tracked. Everything else in `.claude/skills/` is ignored; keep other skills local.
+- **Skills in git.** The four loop skills, `implement-ticket`, `next-ticket`, `ui-ux-pro-max` and `unslop` are tracked (`!` lines in `.gitignore`). Everything else in `.claude/skills/` is ignored; keep other skills local.
+
+## Delivery workflow
+
+How a ticket gets from the queue to a pull request. Each piece is written down once, in the file named here.
+
+- **Start.** The owner starts ticket work with `/next-ticket` ([`.claude/skills/next-ticket/SKILL.md`](.claude/skills/next-ticket/SKILL.md)); there is no scheduler. The driver picks one ticket of epic #8 by the labels `status:ready`, `status:blocked`, `status:in-progress` and `needs-decision`, and runs the [implement-ticket](.claude/skills/implement-ticket/SKILL.md) playbook.
+- **Pushing and pull requests.** Push a branch and open a pull request only when the owner asked for it in the current session. A `/next-ticket` run counts as that request, for that one ticket. Agents take a ticket up to a ready pull request and never merge, release or enable auto-merge: only the owner merges and releases ([docs/RELEASING.md](docs/RELEASING.md)).
+- **Review gate hook.** `.claude/hooks/role-gate.mjs` blocks `gh pr create` and `gh pr ready` until Code Reviewer and Reality Checker ran after the last code edit. Documentation-only changes pass. Starting Claude Code with `ROLE_GATE=off` switches it off for that session; do that only when the owner says so. A pull request is opened or marked ready only after both gates passed on the current diff.
+- **Permissions.** `.claude/settings.json`: documented commands are allowed; force pushes, pushes to `main`, `gh pr merge`, releases and reads of `.env` are denied; edits to `.github/`, `.claude/`, `CLAUDE.md`, `AGENTS.md` and the Loop files ask first.
+- **CI.** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) must be green on the commit before a pull request is marked ready. The workflow is changed only through a reviewed pull request.
+- **Pull request.** Use [`.github/pull_request_template.md`](.github/pull_request_template.md). Add a line to [CHANGELOG.md](CHANGELOG.md) under Unreleased in every ticket pull request.
+- **UI and writing.** [docs/ui-quality.md](docs/ui-quality.md) holds the ten UI rules and how the `ui-ux-pro-max` and `unslop` skills are used.
+- **Decisions.** [docs/owner-decisions.md](docs/owner-decisions.md) records the owner's decisions for this repository. An agent that finds one blocking a ticket stops and says so.
+- **Reporting a vulnerability:** [SECURITY.md](SECURITY.md).

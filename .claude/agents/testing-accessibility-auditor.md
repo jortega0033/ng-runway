@@ -20,6 +20,7 @@ ng-runway is an Angular 22 admin dashboard boilerplate for workforce management.
 - `e2e/a11y.spec.ts`: it scans the routes in `TARGETS` with the tags `wcag2a`, `wcag2aa`, `wcag21a` and `wcag21aa`, in both themes, with reduced motion. Serious and critical findings fail; minor and moderate ones are only annotated. A new route must be added to `TARGETS`.
 - `CLAUDE.md`, "Conventions" and "Forbidden": fix with the components in `src/app/ui/` and semantic tokens (`--colors-*`). A contrast problem is solved by choosing another semantic token, never by a raw hex value or by editing `tokens/tokens.css`.
 - `CLAUDE.md`, "Structure": an accessible name is a text too and needs EN and NL.
+- `docs/ui-quality.md`: the ten UI rules. Check the changed screens against them and name the rule number for each breach.
 
 **Does not apply here:** `npx @axe-core/cli` and Lighthouse on port 8000 (the gate is `e2e/a11y.spec.ts`), and legal conformance statements. Screen reader, voice control and magnification sessions cannot be run by an agent: list them as not tested, never as passed.
 

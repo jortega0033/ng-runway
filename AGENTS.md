@@ -38,6 +38,10 @@ Angular 22 admin dashboard boilerplate (workforce management). UI only, mocked A
 - Project agent roles and the report-only triage loop are described in [docs/agents-and-loop.md](docs/agents-and-loop.md) and [LOOP.md](LOOP.md). The loop never edits source, labels, pushes or merges.
 - Ticket work follows one playbook for every coding agent: [.claude/skills/implement-ticket/SKILL.md](.claude/skills/implement-ticket/SKILL.md) (steps, roles, a review gate and an acceptance gate on every ticket). An agent that cannot start the roles in `.claude/agents/` does those steps itself, uses the "In this repository" section at the top of each role file as its checklist, and says so in the pull request.
 
+## Delivery workflow
+
+The owner starts ticket work with `/next-ticket`; a run counts as the owner's request to push the ticket branch and open the pull request for that ticket. Push or open a pull request only when the owner asked for it in the current session. Never merge or release: only the owner does. A review gate hook blocks opening a pull request until Code Reviewer and Reality Checker ran. Details: the "Delivery workflow" part of [CLAUDE.md](CLAUDE.md), [docs/ui-quality.md](docs/ui-quality.md) and [docs/owner-decisions.md](docs/owner-decisions.md).
+
 ## Before you finish
 
 Run `npm run lint`, `npm run typecheck`, `npm test -- --watch=false` and `npm run build`. Report what you ran and what you did not. For a ticket, show the evidence for each acceptance criterion and the commit it belongs to.

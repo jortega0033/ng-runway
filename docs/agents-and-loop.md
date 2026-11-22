@@ -142,3 +142,15 @@ Two side effects:
 ### Verification
 
 2026-11-22, Claude Code 2.1.323, from the root of the worktree, with the sections in place and before the commit: one headless run, `claude -p "List every project subagent defined in .claude/agents with its exact name and tools, say for each whether its instructions begin with a section titled In this repository, and say whether a skill named implement-ticket is available. Plain list, no commentary." --model haiku`, exited 0. It listed the eight roles by their exact names, with `Read, Grep, Glob` for Code Reviewer, Codebase Onboarding Engineer, Software Architect and Reality Checker and no `tools` line for the other four, answered "yes" for the "In this repository" section on all eight and "no" for `loop-verifier`, and reported the `implement-ticket` skill as available and in its skill list. This is what one model run reported after looking at the folder; no role was started as a subagent in this check, and no ticket was run through the playbook.
+
+## Local change: SDLC kit (2026-11-22)
+
+This pass added the delivery workflow around the roles. No role text other than the three lines below was changed.
+
+- Review gate hook `.claude/hooks/role-gate.mjs` and `.claude/settings.json` (permissions and hooks); `.claude/state/` is git-ignored.
+- `.claude/skills/next-ticket/` (owner-started driver), changes to `.claude/skills/implement-ticket/`, and the copies of `ui-ux-pro-max` and `unslop` with their `PROVENANCE.md` files; `.gitignore` tracks all four.
+- One checklist line naming `docs/ui-quality.md` in the "In this repository" section of Frontend Developer, Code Reviewer and Accessibility Auditor. UI Designer and UX Architect are not installed here.
+- `.github/` pull request template, issue template, CODEOWNERS and Dependabot; `SECURITY.md`, `CHANGELOG.md`, `docs/RELEASING.md`, `docs/ui-quality.md` and `docs/owner-decisions.md`.
+- A "Delivery workflow" part in `CLAUDE.md` and `AGENTS.md`, and a note in `LOOP.md` that ticket work is not a loop run.
+
+The existing CI workflow was not changed.

@@ -21,6 +21,7 @@ ng-runway is an Angular 22 admin dashboard boilerplate for workforce management.
 - `CLAUDE.md`, "Structure": every new string in EN and NL, one i18n scope per feature.
 - `CLAUDE.md`, "Boundaries": data only through `src/app/core/api/*.api.ts`; hour and date rules from `src/app/core/domain/`; features do not import each other.
 - `CLAUDE.md`, "Evidence before calling a ticket done": screen changes work in both themes, in EN and NL and by keyboard, and pass `e2e/a11y.spec.ts`.
+- `docs/ui-quality.md`: the ten UI rules. Check the changed screens before you hand back against them and name the rule number for each breach.
 
 **Does not apply here:** the React example and the Vue and Svelte options, editor integration and WebSocket bridges, PWA features and service-worker caching (the only service worker is MSW's `public/mockServiceWorker.js`), Lighthouse and real-user monitoring.
 
