@@ -40,7 +40,7 @@ Angular 22 admin dashboard boilerplate (workforce management). UI only, mocked A
 
 ## Delivery workflow
 
-The owner starts ticket work with `/next-ticket`; a run counts as the owner's request to push the ticket branch and open the pull request for that ticket. Push or open a pull request only when the owner asked for it in the current session. Never merge or release: only the owner does. A review gate hook blocks opening a pull request until Code Reviewer and Reality Checker ran. Details: the "Delivery workflow" part of [CLAUDE.md](CLAUDE.md), [docs/ui-quality.md](docs/ui-quality.md) and [docs/owner-decisions.md](docs/owner-decisions.md).
+The owner starts ticket work with `/next-ticket`; a run counts as the owner's request to push the ticket branch and open the pull request for that ticket. Push or open a pull request only when the owner asked for it in the current session. Never merge or release: only the owner does. Order: local checks, Code Reviewer and Reality Checker, a draft pull request, CI, then ready only on green CI. A review gate hook blocks opening or readying a pull request until Code Reviewer and Reality Checker ran. Details: the "Delivery workflow" part of [CLAUDE.md](CLAUDE.md), [docs/ui-quality.md](docs/ui-quality.md) and [docs/owner-decisions.md](docs/owner-decisions.md).
 
 ## Before you finish
 

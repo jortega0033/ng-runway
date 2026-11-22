@@ -67,7 +67,7 @@ These skills help the session with its own work. They do not replace the roles a
 - For each acceptance criterion of the issue: the test, command output or screenshot that shows it. A criterion without evidence is not done.
 - For screen changes: both themes, EN and NL, keyboard use, and the axe run in `e2e/a11y.spec.ts`.
 - The commit SHA the evidence belongs to.
-- CI green on that commit (see "Delivery workflow").
+- CI green on that commit, checked by the driver before the pull request is marked ready, not by Reality Checker (see "Delivery workflow"). Order: local checks, both gates, draft pull request, CI, ready.
 
 ## Agent roles, ticket work and triage loop
 
@@ -76,7 +76,7 @@ These skills help the session with its own work. They do not replace the roles a
 - **Before coding:** Codebase Onboarding Engineer for an unfamiliar area, and Software Architect when a boundary, data model, storage schema, public API or dependency changes. Both are read-only.
 - **While coding:** the implementing role that matches the files: Frontend Developer (browser-side code), Backend Architect (contract, mock API, domain rules, the planned local-mode server), Test Automation Engineer (tests and the Playwright harness).
 - **After coding:** Accessibility Auditor when user-facing UI, keyboard handling, focus order or markup changed.
-- **Gates on every ticket, whatever its size:** Code Reviewer on the full diff (review gate), then Reality Checker on the acceptance criteria and the evidence (acceptance gate). Both are read-only and cannot run commands: give them the diff, the criteria and the recorded command output. The session that wrote a change does not count as its reviewer.
+- **Gates on every ticket, whatever its size:** Code Reviewer on the full diff (review gate), then Reality Checker on the acceptance criteria and the recorded local evidence (acceptance gate). Both run after the local checks pass and before the pull request is opened; neither is asked to confirm a CI result. Both are read-only and cannot run commands: give them the diff, the criteria and the recorded command output. The session that wrote a change does not count as its reviewer.
 - **Pull request.** List each role that ran, what it was asked and its verdict under "Agent roles run", and any step done without a role.
 - **Triage loop.** The issue-triage loop is L1 report-only and started by hand ([LOOP.md](LOOP.md)). Do not add a scheduler, automated fixes or auto-merge.
 - **Skills in git.** The four loop skills, `implement-ticket`, `next-ticket`, `ui-ux-pro-max` and `unslop` are tracked (`!` lines in `.gitignore`). Everything else in `.claude/skills/` is ignored; keep other skills local.
@@ -87,9 +87,9 @@ How a ticket gets from the queue to a pull request. Each piece is written down o
 
 - **Start.** The owner starts ticket work with `/next-ticket` ([`.claude/skills/next-ticket/SKILL.md`](.claude/skills/next-ticket/SKILL.md)); there is no scheduler. The driver picks one ticket of epic #8 by the labels `status:ready`, `status:blocked`, `status:in-progress` and `needs-decision`, and runs the [implement-ticket](.claude/skills/implement-ticket/SKILL.md) playbook.
 - **Pushing and pull requests.** Push a branch and open a pull request only when the owner asked for it in the current session. A `/next-ticket` run counts as that request, for that one ticket. Agents take a ticket up to a ready pull request and never merge, release or enable auto-merge: only the owner merges and releases ([docs/RELEASING.md](docs/RELEASING.md)).
-- **Review gate hook.** `.claude/hooks/role-gate.mjs` blocks `gh pr create` and `gh pr ready` until Code Reviewer and Reality Checker ran after the last code edit. Documentation-only changes pass. Starting Claude Code with `ROLE_GATE=off` switches it off for that session; do that only when the owner says so. A pull request is opened or marked ready only after both gates passed on the current diff.
-- **Permissions.** `.claude/settings.json`: documented commands are allowed; force pushes, pushes to `main`, `gh pr merge`, releases and reads of `.env` are denied; edits to `.github/`, `.claude/`, `CLAUDE.md`, `AGENTS.md` and the Loop files ask first.
-- **CI.** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) must be green on the commit before a pull request is marked ready. The workflow is changed only through a reviewed pull request.
+- **Review gate hook.** `.claude/hooks/role-gate.mjs` blocks `gh pr create` and `gh pr ready` until Code Reviewer and Reality Checker ran after the last code edit. Documentation-only changes pass. Starting Claude Code with `ROLE_GATE=off` switches it off for that session; do that only when the owner says so. Order: local checks pass, both gates run, `gh pr create --draft`, CI runs on the draft, then `gh pr ready` only on green CI. A pull request is never opened, as a draft or otherwise, with a gate not run on the current diff. If CI fails, fix, re-run the local checks and both gates, and push.
+- **Permissions.** `.claude/settings.json`: documented commands are allowed; force pushes, pushes to `main`, `gh pr merge`, releases and reads of `.env` are denied; edits to `.github/`, the agent configuration under `.claude/` (agents, skills, hooks, `settings.json`, `agency-agents`), `CLAUDE.md`, `AGENTS.md` and the Loop files ask first.
+- **CI.** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on the draft pull request and must be green on the current commit before it is marked ready. The driver checks that, not Reality Checker. The workflow is changed only through a reviewed pull request.
 - **Pull request.** Use [`.github/pull_request_template.md`](.github/pull_request_template.md). Add a line to [CHANGELOG.md](CHANGELOG.md) under Unreleased in every ticket pull request.
 - **UI and writing.** [docs/ui-quality.md](docs/ui-quality.md) holds the ten UI rules and how the `ui-ux-pro-max` and `unslop` skills are used.
 - **Decisions.** [docs/owner-decisions.md](docs/owner-decisions.md) records the owner's decisions for this repository. An agent that finds one blocking a ticket stops and says so.

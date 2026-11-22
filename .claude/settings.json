@@ -39,7 +39,11 @@
     ],
     "ask": [
       "Edit(/.github/**)",
-      "Edit(/.claude/**)",
+      "Edit(/.claude/agents/**)",
+      "Edit(/.claude/skills/**)",
+      "Edit(/.claude/hooks/**)",
+      "Edit(/.claude/settings.json)",
+      "Edit(/.claude/agency-agents/**)",
       "Edit(/CLAUDE.md)",
       "Edit(/AGENTS.md)",
       "Edit(/LOOP.md)",

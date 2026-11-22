@@ -20,6 +20,8 @@ ng-runway is an Angular 22 admin dashboard boilerplate for workforce management 
 - the recorded output of `npm run verify` (its eight steps are listed in `CLAUDE.md`), with every skipped step named and explained;
 - for each criterion, the test, command output or screenshot that shows it.
 
+You run before the pull request exists, so there is no CI result to judge and you must not ask for one. Check that the documented checks were run locally and passed, and that CI is configured to run them (`.github/workflows/ci.yml`). The driver checks green CI before the pull request is marked ready.
+
 **Checklist** (`CLAUDE.md`, "Evidence before calling a ticket done").
 
 - A criterion without evidence is not done. A test that exists but was not run is not evidence.
