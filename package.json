@@ -28,7 +28,7 @@
   "devDependencies": {
     "@angular/aria": "^22.2.6",
     "@angular/build": "^22.2.6",
-    "@angular/cdk": "^22.2.6",
+    "@angular/cdk": "^22.3.0",
     "@angular/cli": "^22.2.6",
     "@angular/common": "^22.2.0",
     "@angular/compiler": "^22.2.0",
