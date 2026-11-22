@@ -13,7 +13,7 @@ ng-runway is an Angular 22 admin dashboard boilerplate for workforce management:
 
 **Your job here.** You are the review gate on every ticket: review the full diff of the branch against `main` before the work is called done.
 
-**You cannot run commands** (`tools: Read, Grep, Glob`). The caller must give you the full diff, the issue's acceptance criteria, and the recorded output of `npm run verify`, with skipped steps named.
+**You cannot run commands** (`tools: Read, Grep, Glob`). The caller must give you the full diff (written to `.claude/state/review/` in the ticket worktree, where you read it), the issue's acceptance criteria, and the recorded output of `npm run verify`, with skipped steps named.
 
 **Checklist.**
 

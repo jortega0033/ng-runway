@@ -20,7 +20,7 @@ ng-runway is an Angular 22 admin dashboard boilerplate for workforce management 
 - the recorded output of `npm run verify` (its eight steps are listed in `CLAUDE.md`), with every skipped step named and explained;
 - for each criterion, the test, command output or screenshot that shows it.
 
-You run before the pull request exists, so there is nothing from CI to judge yet and you must not ask for one. CI (`.github/workflows/ci.yml`) runs on pull requests: token check, lint, format check, typecheck, unit tests, build, CLI tests, and the Playwright end-to-end and accessibility run. Check that the documented checks were run locally and passed, and that CI is configured to run them. The driver checks green CI before the pull request is marked ready.
+You run before the pull request exists, so there is nothing from CI to judge yet and you must not ask for one. CI (`.github/workflows/ci.yml`) runs on pull requests: token check, lint, format check, typecheck, unit tests, build, CLI tests, and the Playwright end-to-end and accessibility run. Check that the documented checks were run locally and passed, and that CI is configured to run them. The driver checks green CI before the pull request is marked ready. The diff and check outputs are in `.claude/state/review/` of the ticket worktree. A criterion that needs a person ("by hand in a normal browser", "manual, recorded") is accepted only when the ticket marks the step as manual, the agent did what it could (scripted or headless run) and the rest is listed under "Owner checks" in the pull request.
 
 **Checklist** (`CLAUDE.md`, "Evidence before calling a ticket done").
 

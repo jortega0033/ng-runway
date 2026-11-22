@@ -147,7 +147,7 @@ Two side effects:
 
 This pass added the delivery workflow around the roles. No role text other than the three lines below was changed.
 
-- Review gate hook `.claude/hooks/role-gate.mjs` and `.claude/settings.json` (permissions and hooks); `.claude/state/` is git-ignored.
+- Review gate hook `.claude/hooks/role-gate.mjs` and `.claude/settings.json` (permissions and hooks); `.claude/state/` is git-ignored (review files for the gates go to `.claude/state/review/`; the gate ledger is `claude-role-runs.jsonl` in the common git dir).
 - `.claude/skills/next-ticket/` (owner-started driver), changes to `.claude/skills/implement-ticket/`, and the copies of `ui-ux-pro-max` and `unslop` with their `PROVENANCE.md` files; `.gitignore` tracks all four.
 - One checklist line naming `docs/ui-quality.md` in the "In this repository" section of Frontend Developer, Code Reviewer and Accessibility Auditor. UI Designer and UX Architect are not installed here.
 - `.github/` pull request template, issue template, CODEOWNERS and Dependabot; `SECURITY.md`, `CHANGELOG.md`, `docs/RELEASING.md`, `docs/ui-quality.md` and `docs/owner-decisions.md`.

@@ -48,7 +48,17 @@
       "Edit(/AGENTS.md)",
       "Edit(/LOOP.md)",
       "Edit(/loop-constraints.md)",
-      "Edit(/loop-budget.md)"
+      "Edit(/loop-budget.md)",
+      "Edit(**/.claude/agents/**)",
+      "Edit(**/.claude/skills/**)",
+      "Edit(**/.claude/hooks/**)",
+      "Edit(**/.claude/agency-agents/**)",
+      "Edit(**/.claude/settings.json)",
+      "Write(**/.claude/agents/**)",
+      "Write(**/.claude/skills/**)",
+      "Write(**/.claude/hooks/**)",
+      "Write(**/.claude/agency-agents/**)",
+      "Write(**/.claude/settings.json)"
     ],
     "deny": [
       "Read(./.env)",
