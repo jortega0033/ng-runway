@@ -46,7 +46,12 @@ Thumbs.db
 # ng-runway
 .plugin-notes.md
 .agents/
-.claude/skills/
+.claude/skills/*
+# Loop Engineering skills are project files (see docs/agents-and-loop.md); other skills stay local.
+!.claude/skills/issue-triage/
+!.claude/skills/loop-budget/
+!.claude/skills/loop-constraints/
+!.claude/skills/loop-intake/
 skills-lock.json
 /playwright-report
 /test-results

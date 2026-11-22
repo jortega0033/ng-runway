@@ -11,3 +11,6 @@ package-lock.json
 tokens
 src/mockServiceWorker.js
 public/mockServiceWorker.js
+# Loop Engineering state files are rewritten by triage runs.
+issue-triage-state.md
+loop-run-log.md
