@@ -145,11 +145,12 @@ Two side effects:
 
 ## Local change: SDLC kit (2026-11-22)
 
-This pass added the delivery workflow around the roles. No role text other than the three lines below was changed.
+This pass added the delivery workflow around the roles. Role text was changed only as listed in the two role-text bullets below.
 
 - Review gate hook `.claude/hooks/role-gate.mjs` and `.claude/settings.json` (permissions and hooks); `.claude/state/` is git-ignored (review files for the gates go to `.claude/state/review/`; the gate ledger is `claude-role-runs.jsonl` in the common git dir).
 - `.claude/skills/next-ticket/` (owner-started driver), changes to `.claude/skills/implement-ticket/`, and the copies of `ui-ux-pro-max` and `unslop` with their `PROVENANCE.md` files; `.gitignore` tracks all four.
 - One checklist line naming `docs/ui-quality.md` in the "In this repository" section of Frontend Developer, Code Reviewer and Accessibility Auditor. UI Designer and UX Architect are not installed here.
+- Second pass: the "In this repository" sections of Code Reviewer and Reality Checker name `.claude/state/review/` as the place to read the diff and check outputs; Reality Checker's section adds the "Owner checks" rule for acceptance steps the ticket marks as manual.
 - `.github/` pull request template, issue template, CODEOWNERS and Dependabot; `SECURITY.md`, `CHANGELOG.md`, `docs/RELEASING.md`, `docs/ui-quality.md` and `docs/owner-decisions.md`.
 - A "Delivery workflow" part in `CLAUDE.md` and `AGENTS.md`, and a note in `LOOP.md` that ticket work is not a loop run.
 
