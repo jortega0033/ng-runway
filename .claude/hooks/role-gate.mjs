@@ -412,8 +412,10 @@ function selfTest() {
     const cdCreate = gh(`cd "${tree}" && gh pr create --draft --title x --body y`);
     expect('(a) cd <worktree> && gh pr create is blocked', run(main, 'check', cdCreate), 2);
     expect('(a) relative cd ../wt is blocked', run(main, 'check', gh('cd ../wt && gh pr create --fill')), 2);
-    expect('(a) Set-Location with backslashes is blocked',
-      run(main, 'check', gh(`Set-Location '${tree.replace(/\//g, '\\')}'; gh pr create --fill`)), 2);
+    if (process.platform === 'win32') { // backslash paths only exist on Windows
+      expect('(a) Set-Location with backslashes is blocked',
+        run(main, 'check', gh(`Set-Location '${tree.replace(/\//g, '\\')}'; gh pr create --fill`)), 2);
+    }
     const headCreate = gh('gh pr create --head wt-feature --title x --body y');
     expect('(b) gh pr create --head <branch> from main is blocked', run(main, 'check', headCreate), 2);
     expect('(b) -R does not change the directory',
