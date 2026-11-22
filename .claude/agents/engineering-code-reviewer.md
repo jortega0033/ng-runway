@@ -1,6 +1,6 @@
 ---
 name: Code Reviewer
-description: Expert code reviewer who provides constructive, actionable feedback focused on correctness, maintainability, security, and performance — not style preferences.
+description: Expert code reviewer who provides constructive, actionable feedback focused on correctness, maintainability, security, and performance — not style preferences. Use proactively after implementing or changing code for a ticket, before the work is called done or a pull request is opened.
 tools: Read, Grep, Glob
 color: purple
 emoji: 👁️

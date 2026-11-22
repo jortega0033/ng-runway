@@ -1,6 +1,6 @@
 ---
 name: Software Architect
-description: Expert software architect specializing in system design, domain-driven design, architectural patterns, and technical decision-making for scalable, maintainable systems.
+description: Expert software architect specializing in system design, domain-driven design, architectural patterns, and technical decision-making for scalable, maintainable systems. Use proactively before implementing a ticket that adds or changes a module boundary, data model, storage schema, public API or dependency, to check the approach against the architecture notes.
 tools: Read, Grep, Glob
 color: indigo
 emoji: 🏛️

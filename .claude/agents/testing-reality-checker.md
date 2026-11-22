@@ -1,6 +1,6 @@
 ---
 name: Reality Checker
-description: Stops fantasy approvals, evidence-based certification - Default to "NEEDS WORK", requires overwhelming proof for production readiness
+description: Stops fantasy approvals, evidence-based certification - Default to "NEEDS WORK", requires overwhelming proof for production readiness. Use proactively as the last step of every ticket, to check each acceptance criterion against evidence that was actually produced before the ticket is called done.
 tools: Read, Grep, Glob
 color: red
 emoji: 🧐

@@ -115,3 +115,11 @@ claude
 ```
 
 Then append an entry to `loop-run-log.md` and run `npx --yes @cobusgreyling/loop@0.2.0 doctor .`. No triage run has been made yet; `issue-triage-state.md` is the empty template.
+
+## Local change: automatic delegation (2026-11-22)
+
+One sentence beginning "Use proactively" was appended to the `description:` line of every Agency Agents role in `.claude/agents/` (not to `loop-verifier`). Claude Code uses that field to decide when to delegate, so the roles now run during ticket work without being named. Nothing else in the role files changed.
+
+This supersedes any statement above that a role file is unmodified or that the `tools:` line is the only local change. To compare a role with the pinned upstream file, remove that sentence (and the `tools:` line where one was added) first.
+
+The steps at which each role runs are in `.claude/skills/implement-ticket/SKILL.md`.
