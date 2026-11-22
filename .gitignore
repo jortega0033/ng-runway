@@ -52,8 +52,15 @@ Thumbs.db
 !.claude/skills/loop-budget/
 !.claude/skills/loop-constraints/
 !.claude/skills/loop-intake/
+!.claude/skills/implement-ticket/
+!.claude/skills/next-ticket/
+!.claude/skills/ui-ux-pro-max/
+!.claude/skills/unslop/
 skills-lock.json
 /playwright-report
 /test-results
 /blob-report
 .build-brief*.md
+
+# Review gate ledger (local)
+.claude/state/
