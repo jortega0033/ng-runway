@@ -43,7 +43,7 @@
     "@faker-js/faker": "^10.6.0",
     "@jsverse/transloco": "^8.4.0",
     "@ngrx/signals": "^22.0.1",
-    "@playwright/test": "^1.65.0",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4.3.5",
     "@testing-library/angular": "^19.6.0",
     "angular-eslint": "^22.6.0",
